@@ -1,0 +1,36 @@
+/* TOPO do SITE */
+section.topo-do-site {
+    min-height: 100vh;
+    padding: 180px 8%;
+}
+
+.img-topo-site img {
+    width: 480px;
+}
+
+section.topo-do-site .flex {
+    align-items: center;
+    justify-content: center;
+    gap: 70px;
+}
+
+.topo-do-site h1 {
+    font-size: 38px;
+    line-height: 50px;
+    font-weight: 650;
+    color: #000;
+}
+
+.topo-do-site .txt-topo-site p {
+    margin: 20px 0;
+    color: #000;
+}
+
+@media screen and (max-width: 1080px) {
+
+    /* TOPO */
+    .img-topo-site img {
+        display: none;
+    }
+
+}

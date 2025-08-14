@@ -1,0 +1,46 @@
+/* SERVIÇOS */
+section.servicos {
+    min-height: 100vh;
+    padding: 180px 8%;
+}
+
+.servicos .container-grid-cards-servicos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 340px);
+    justify-content: center;
+    gap: 40px;
+}
+
+/* SERVICOS - Cards */
+.servicos .container-grid-cards-servicos .card {
+    padding: 1rem;
+    border-radius: 5px;
+    background-color: #F3F3F3;
+    border: 0;
+}
+
+.servicos .container-grid-cards-servicos .card h2 {
+    font-weight: 550;
+    color: #000;
+}
+
+.servicos .container-grid-cards-servicos .card .bg {
+    background-color: #fff;
+    padding: 1rem;
+}
+
+.servicos .container-grid-cards-servicos .card .circles {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.servicos .container-grid-cards-servicos .card .circle {
+    background: #8CB0FF;
+    padding: 0.5rem;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: 500;
+}

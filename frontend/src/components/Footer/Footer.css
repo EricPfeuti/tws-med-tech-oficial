@@ -1,0 +1,11 @@
+
+/* FOOTER */
+footer {
+    padding: 40px 8%;
+    background-color: #FF0000;
+}
+
+footer .flex {
+    justify-content: space-between;
+    align-items: center;
+}

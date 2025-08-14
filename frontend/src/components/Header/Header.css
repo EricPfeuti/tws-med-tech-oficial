@@ -1,0 +1,150 @@
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  padding: 40px 8%;
+  transition: all 0.5s ease;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo{
+  cursor: pointer;
+}
+
+.header-left {
+  display: flex;
+  gap: 8px;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar a {
+  font-weight: 530;
+  font-size: 18px;
+}
+
+.navbar a:hover {
+  color: #ff0000;
+  transition: 0.2s ease;
+}
+
+#btn-entrar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 15px;
+  font-size: 18px;
+  font-weight: 600;
+  background-color: #ff0000;
+  border-radius: 5px;
+  border: 0;
+  transition: 0.2s;
+  color: #fff;
+  cursor: pointer;
+}
+
+#btn-entrar a {
+  text-decoration: none;
+}
+
+#btn-entrar button i {
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.desktop-nav,
+.desktop-btn {
+  display: flex;
+}
+
+@media screen and (max-width: 1080px) {
+  /* HEADER */
+  header #btn-entrar {
+    display: none;
+  }
+
+  .desktop-nav,
+  .desktop-btn {
+    display: none;
+  }
+  .mobile-only {
+    display: block;
+  }
+}
+
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 250px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  transition: right 0.3s ease-in-out;
+}
+
+.side-menu.open {
+  right: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  align-self: flex-end;
+  cursor: pointer;
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.mobile-nav a {
+  font-size: 18px;
+  font-weight: 530;
+  text-decoration: none;
+  color: black;
+}
+
+.mobile-nav a:hover {
+  color: #ff0000;
+}
+
+/* Overlay escurecendo o fundo */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1500;
+}
