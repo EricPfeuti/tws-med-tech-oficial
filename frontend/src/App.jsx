@@ -1,20 +1,30 @@
-import "bootstrap-icons/font/bootstrap-icons.css";
-import Header from "./components/Header/Header";
-import TopoSite from "./components/TopoSite/TopoSite";
-import Servicos from "./components/Servicos/Servicos";
-import Membros from "./components/Membros/Membros";
-import Footer from "./components/Footer/Footer";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 function App() {
+  
+  const [array, setArray] = useState([]);
+
+  const fetchAPI = async () => {
+    const response = await axios.get("http://localhost:8080/api");
+    setArray(response.data.users);
+    console.log(response.data.users);
+  };
+
+  useEffect(() => {
+    fetchAPI();
+  },[]);
+
   return (
     <div>
-      <Header /><br /><br />
-      <main>
-        <TopoSite />
-        <Servicos />
-        <Membros />
-      </main>
-      <Footer />
+      {
+        array.map((user, index) => (
+          <div key={index}>
+            <p>{user}</p>
+            <br></br>
+          </div>
+        ))
+      }
     </div>
   );
 }
