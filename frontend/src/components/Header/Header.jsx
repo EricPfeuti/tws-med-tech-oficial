@@ -20,7 +20,7 @@ export default function Header() {
       </div>
       <div className="header-right">
         <div id="btn-entrar">
-          <a href="#">
+          <a href="/register">
             <button>
               <i class="bi bi-person-fill"></i> Entrar
             </button>
