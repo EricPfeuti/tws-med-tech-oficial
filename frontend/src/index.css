@@ -17,14 +17,14 @@ html {
   scroll-behavior: smooth;
 }
 
-.flex{
-    display: flex;
+.flex {
+  display: flex;
 }
 
 #titulo {
-    font-size: clamp(2rem, 10vw, 3.5rem);
-    text-align: center;
-    font-weight: 620;
+  font-size: clamp(2rem, 10vw, 3.5rem);
+  text-align: center;
+  font-weight: 620;
 }
 
 #btn-vermelho button {
@@ -60,25 +60,107 @@ html {
   text-decoration: none;
 }
 
-.btn-social button{
-    border: none;
-    background-color: #FF0000;
-    width: 70px;
-    height: 70px;
-    border-radius: 40px;
-    font-size: 40px;
-    margin: 0 5px;
-    cursor: pointer;
-    color: #fff;
-    transition: .3s ease;
+.btn-social button {
+  border: none;
+  background-color: #FF0000;
+  width: 70px;
+  height: 70px;
+  border-radius: 40px;
+  font-size: 40px;
+  margin: 0 5px;
+  cursor: pointer;
+  color: #fff;
+  transition: .3s ease;
 }
 
-.btn-social button:hover{
-    background:rgb(243, 55, 55);
+.btn-social button:hover {
+  background: rgb(243, 55, 55);
 }
 
-.btn-social button i{
-    color: #fff;
+.btn-social button i {
+  color: #fff;
+}
+
+/* FORMULARIOS */
+.container-form {
+  padding: 200px 8%;
+  min-height: 100vh;
+}
+
+.container-header {
+  background: linear-gradient(120deg, #c53636 0%, #FF0000 100%);
+  padding: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 4px;
+}
+
+.container-header img {
+  width: 50px;
+}
+
+.container-header h2 {
+  color: #fff;
+}
+
+.form {
+  padding: 18px;
+}
+
+.form a{
+  color: #007fff;
+  text-decoration: underline;
+}
+
+.form-content {
+  margin-bottom: 8px;
+  padding-bottom: 18px;
+  position: relative;
+}
+
+.form-content label {
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.form-content input {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  padding: 8px;
+  border: 2px solid #dfdfdf;
+}
+
+.form-content a {
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  visibility: hidden;
+}
+
+.form button {
+  background-color: #FF0000;
+  color: #fff;
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+.form-content.error input {
+  border-color: #ff3b25;
+}
+
+.form-content.error a {
+  color: #ff3b25;
+  visibility: visible;
 }
 
 @media screen and (max-width: 1080px) {

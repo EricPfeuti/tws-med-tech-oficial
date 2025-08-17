@@ -1,0 +1,30 @@
+section.cards-option{
+    padding: 200px 8%;
+    min-height: 100vh;
+}
+
+section.cards-option .cards-option-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 340px);
+    justify-content: center;
+    gap: 40px;
+}
+
+section.cards-option .cards-option-container .card-option{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #F3F3F3;
+    padding: 40px;
+    border-radius: 4px;
+}
+
+section.cards-option .cards-option-container .card-option i{
+    font-size: 50px;
+    margin-bottom: 10px;
+    color: #FF0000;
+}
+
+section.cards-option .cards-option-container .card-option h2{
+    margin-bottom: 10px;
+}

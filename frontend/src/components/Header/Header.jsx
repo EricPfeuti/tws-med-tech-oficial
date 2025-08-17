@@ -9,13 +9,13 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-left">
-        <a href="#">
+        <a href="/">
           <img src={logo} alt="TWS MedTech" className="logo" />
         </a>
         <nav className="navbar desktop-nav">
           <a href="#servicos">Serviços</a>
           <a href="#membros">Quem somos</a>
-          <a href="#area-medico">Área do médico</a>
+          <a href="/signDoctor">Área do médico</a>
         </nav>
       </div>
       <div className="header-right">
@@ -46,10 +46,10 @@ export default function Header() {
           <a href="#quem-somos" onClick={() => setMenuOpen(false)}>
             Quem somos
           </a>
-          <a href="#area-medico" onClick={() => setMenuOpen(false)}>
+          <a href="/signDoctor" onClick={() => setMenuOpen(false)}>
             Área do médico
           </a>
-          <a href="#" id="mobile-login" onClick={() => setMenuOpen(false)}>
+          <a href="/register" id="mobile-login" onClick={() => setMenuOpen(false)}>
             <i className="bi bi-person-fill"></i> Entrar
           </a>
         </nav>

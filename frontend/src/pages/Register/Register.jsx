@@ -1,9 +1,16 @@
 import React from "react";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
+import CardsOption from "../../components/CardsOption/CardsOption";
 
 function Register() {
     return (
         <div>
-            <h1>Cadastro</h1>
+            <Header />
+            <main>
+                <CardsOption />
+            </main>
+            <Footer />
         </div>
     )
 
