@@ -13,6 +13,7 @@ export default function FormLoginDoctor() {
         const resp = await fetch("/api/loginDoctor", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ doctorName, doctorPassword }),
         });
         if (resp.ok) {

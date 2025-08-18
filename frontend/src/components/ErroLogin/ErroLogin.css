@@ -1,0 +1,36 @@
+/* ERRO do SITE */
+section.erro-login {
+    min-height: 100vh;
+    padding: 180px 8%;
+}
+
+.img-erro-login img {
+    width: 480px;
+}
+
+section.erro-login .flex {
+    align-items: center;
+    justify-content: center;
+    gap: 70px;
+}
+
+.erro-login h1 {
+    font-size: 38px;
+    line-height: 50px;
+    font-weight: 650;
+    color: #000;
+}
+
+.erro-login .txt-erro-login p {
+    margin: 20px 0;
+    color: #000;
+}
+
+@media screen and (max-width: 1080px) {
+
+    /* TOPO */
+    .img-erro-login img {
+        display: none;
+    }
+
+}

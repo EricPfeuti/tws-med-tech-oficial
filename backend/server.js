@@ -81,6 +81,15 @@ app.post('/api/loginDoctor', async (req, res) => {
 
 });
 
+// VERIFICAR SESSÃO MÉDICO
+app.get('/api/checkDoctorSession' , (req, res) => {
+    if (req.session.doctorName) {
+        res.json({ logado: true, doctorName: req.session.doctorName });
+    } else {
+        res.json({ logado: false });
+    }
+})
+
 app.listen(port, () => {
     console.log(`Servidor rodando em: http://localhost:${port}`);
 });

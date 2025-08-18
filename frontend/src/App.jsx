@@ -9,6 +9,8 @@ import SignPatient from './pages/Patient/SignPatient/SignPatient';
 import LoginPatient from './pages/Patient/LoginPatient/LoginPatient';
 import Doctor from './pages/Doctor/Home/HomeDoctor';
 import Patient from './pages/Patient/Home/HomePatient';
+import PrivateRoute from './components/Routes/Private/PrivateRoute';
+import Erro from './pages/Erro/Erro';
 
 function App() {
   return (
@@ -20,9 +22,13 @@ function App() {
         <Route path='/loginDoctor' element={<LoginDoctor />} />
         <Route path='/signPatient' element={<SignPatient />} />
         <Route path='/loginPatient' element={<LoginPatient />} />
-        <Route path="/doctor" element={<Doctor />} />
-        <Route path="/patient" element={<Patient />} />
-        <Route path='*' element={<h1>Not Found</h1>} />
+        <Route path='/doctor' element={
+          <PrivateRoute role="Doctor">
+            <Doctor />
+          </PrivateRoute>
+        } />
+        <Route path='/patient' element={<Patient />} />
+        <Route path='*' element={<Erro />} />
       </Routes>
     </BrowserRouter>
   );
