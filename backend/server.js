@@ -15,6 +15,7 @@ app.use(session({
     secret: 'segredo-super-secreto',
     resave: false,
     saveUninitialized: true,
+    cookie: { secure: false, sameSite: "lax" }
 }));
 
 const corsOptions = {
@@ -81,14 +82,28 @@ app.post('/api/loginDoctor', async (req, res) => {
 
 });
 
-// VERIFICAR SESSÃO MÉDICO
-app.get('/api/checkDoctorSession' , (req, res) => {
-    if (req.session.doctorName) {
-        res.json({ logado: true, doctorName: req.session.doctorName });
-    } else {
-        res.json({ logado: false });
+app.get('/api/checkDoctorSession', (req, res) => {
+  if (req.session.doctorName) {
+    res.json({ logado: true, doctorName: req.session.doctorName });
+  } else {
+    res.json({ logado: false });
+  }
+});
+
+app.post('/api/logoutDoctor', (req, res) => {
+  if (!req.session.doctorName) {
+    return res.status(400).json({ message: "Nenhuma sessão ativa" });
+  }
+
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Erro ao encerrar sessão:", err);
+      return res.status(500).json({ message: "Erro ao encerrar sessão" });
     }
-})
+    res.clearCookie("connect.sid"); // limpa cookie de sessão
+    res.json({ message: "Logout realizado com sucesso" });
+  });
+});
 
 app.listen(port, () => {
     console.log(`Servidor rodando em: http://localhost:${port}`);
