@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth"
+import { DoctorContext } from "../context/DoctorContext";
 
 export default function PrivateRoute({ children }) {
-  const { doctor, loading } = useAuth();
+  const { doctor, loading } = useContext(DoctorContext);
 
   if (loading) return <p>Carregando...</p>;
 
-  return doctor ? children : <Navigate to="/loginDoctor" replace />;
+  if (!doctor) {
+    return <Navigate to="/loginDoctor" replace />;
+  }
+
+  return children;
 }

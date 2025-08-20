@@ -12,7 +12,7 @@ import Patient from './pages/Patient/Home/HomePatient';
 import Erro from './pages/Erro/Erro';
 
 import PrivateRoute from './utils/PrivateRoutes';
-import { DoctorProvider } from './context/doctorContext';
+import { DoctorProvider } from './context/DoctorContext';
 
 function App() {
   return (

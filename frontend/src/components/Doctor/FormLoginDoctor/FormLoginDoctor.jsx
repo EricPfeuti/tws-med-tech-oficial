@@ -3,6 +3,7 @@ import logoMiniatura from "../../../assets/images/logoMiniaturaTWSMedTech.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
+import api from "../../../api/api";
 
 export default function FormLoginDoctor() {
   const [doctorName, setDoctorName] = useState("");
@@ -13,20 +14,17 @@ export default function FormLoginDoctor() {
   async function handleLogin(e) {
     e.preventDefault();
     try {
-      const resp = await fetch("/api/loginDoctor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ doctorName, doctorPassword }),
-      });
+      const res = await api.post(
+        "/loginDoctor",
+        { doctorName, doctorPassword },
+        { withCredentials: true }
+      );
 
-      const data = await resp.json();
-
-      if (resp.ok) {
-        setDoctor({ name: data.doctorName });
+      if (res.data.sucesso) {
+        setDoctor({ name: res.data.doctorName, role: "doctor" });
         navigate("/doctor");
       } else {
-        alert(data.erro || "Login inválido");
+        alert(res.data.erro || "Login inválido");
         navigate("/erro");
       }
     } catch (err) {

@@ -30,24 +30,6 @@ export function DoctorProvider({ children }) {
     checkDoctorSession();
   }, []);
 
-  const loginDoctor = async (credentials) => {
-    try {
-      const res = await api.post("/loginDoctor", credentials, {
-        withCredentials: true,
-      });
-      if (res.data.sucesso) {
-        setDoctor({
-          name: res.data.doctorName,
-          role: "doctor",
-        });
-        return true;
-      }
-    } catch (err) {
-      console.error("Erro no login do médico:", err);
-      return false;
-    }
-  };
-
   const logoutDoctor = async () => {
     try {
       await api.post("/logoutDoctor", {}, { withCredentials: true });
@@ -58,7 +40,7 @@ export function DoctorProvider({ children }) {
   };
 
   return (
-    <DoctorContext.Provider value={{ doctor, setDoctor, loading, loginDoctor, logoutDoctor }}>
+    <DoctorContext.Provider value={{ doctor, setDoctor, loading, logoutDoctor }}>
       {children}
     </DoctorContext.Provider>
   );
