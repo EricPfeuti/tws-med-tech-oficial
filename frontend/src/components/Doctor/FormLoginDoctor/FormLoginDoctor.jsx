@@ -21,10 +21,9 @@ export default function FormLoginDoctor() {
       );
 
       if (res.data.sucesso) {
-        setDoctor({ name: res.data.doctorName, role: "doctor" });
+        setDoctor({ name: res.data.doctorName });
         navigate("/doctor");
       } else {
-        alert(res.data.erro || "Login inválido");
         navigate("/erro");
       }
     } catch (err) {

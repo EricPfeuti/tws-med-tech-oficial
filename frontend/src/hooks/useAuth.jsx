@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { DoctorContext } from "../context/DoctorContext";
+import { UserContext } from "../context/userContext";
 
 export default function useAuth() {
-    return useContext(DoctorContext);
+    return useContext(UserContext);
 }

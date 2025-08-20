@@ -12,11 +12,11 @@ import Patient from './pages/Patient/Home/HomePatient';
 import Erro from './pages/Erro/Erro';
 
 import PrivateRoute from './utils/PrivateRoutes';
-import { DoctorProvider } from './context/DoctorContext';
+import { UserProvider } from './context/userContext';
 
 function App() {
   return (
-    <DoctorProvider>
+    <UserProvider>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Index />} />
@@ -30,11 +30,15 @@ function App() {
               <Doctor />
             </PrivateRoute>
           } />
-          <Route path='/patient' element={<Patient />} />
+          <Route path='/patient' element={
+            <PrivateRoute>
+              <Patient />
+            </PrivateRoute>
+          } />
           <Route path='*' element={<Erro />} />
         </Routes>
       </BrowserRouter>
-    </DoctorProvider>
+    </UserProvider>
   );
 }
 

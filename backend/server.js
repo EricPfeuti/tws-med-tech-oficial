@@ -105,7 +105,85 @@ app.post("/api/logoutDoctor", (req, res) => {
       return res.status(500).json({ erro: "Erro ao sair da conta" });
     }
 
-    res.clearCookie("connect.sid"); // limpa o cookie da sessão
+    res.clearCookie("connect.sid");
+    res.json({ message: "Logout realizado com sucesso" });
+  });
+});
+
+// CADASTRO PACIENTE
+app.post("/api/signPatient", async (req, res) => {
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    const collectionPacientes = banco.collection("pacientes");
+
+    const pacienteExistente = await collectionPacientes.findOne({
+      patientName: req.body.patientName,
+    });
+    if (pacienteExistente) {
+      return res.status(400).json({ erro: "Paciente já existe" });
+    }
+
+    const senhaCriptografada = await bcrypt.hash(req.body.patientPassword, 10);
+    await collectionPacientes.insertOne({
+      patientName: req.body.patientName,
+      patientPassword: senhaCriptografada,
+    });
+
+    res.json({ sucesso: true });
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).json({ erro: "Erro ao registrar paciente" });
+  } finally {
+    await client.close();
+  }
+});
+
+// LOGIN PACIENTE
+app.post("/api/loginPatient", async (req, res) => {
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    const collectionPacientes = banco.collection("pacientes");
+
+    const paciente = await collectionPacientes.findOne({
+      patientName: req.body.patientName,
+    });
+    if (
+      paciente &&
+      (await bcrypt.compare(req.body.patientPassword, paciente.patientPassword))
+    ) {
+      req.session.patientName = paciente.patientName;
+      return res.json({ sucesso: true, patientName: paciente.patientName });
+    }
+
+    res.status(401).json({ erro: "Login inválido" });
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).json({ erro: "Erro no login" });
+  } finally {
+    await client.close();
+  }
+});
+
+app.get("/api/checkPatientSession", (req, res) => {
+  if (req.session.patientName) {
+    res.json({ logado: true, patientName: req.session.patientName });
+  } else {
+    res.json({ logado: false });
+  }
+});
+
+app.post("/api/logoutPatient", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Erro ao destruir sessão:", err);
+      return res.status(500).json({ erro: "Erro ao sair da conta" });
+    }
+
+    res.clearCookie("connect.sid");
     res.json({ message: "Logout realizado com sucesso" });
   });
 });
