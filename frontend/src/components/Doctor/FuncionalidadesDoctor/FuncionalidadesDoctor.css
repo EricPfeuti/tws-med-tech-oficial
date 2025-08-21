@@ -1,0 +1,36 @@
+section.funcionalidades {
+    min-height: 100vh;
+    padding: 180px 8%;
+}
+
+.funcionalidades .container-grid-funcionalidades {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 340px);
+    justify-content: center;
+    gap: 40px;
+    padding: 60px 8%;
+}
+
+.funcionalidades .container-grid-funcionalidades .card {
+    padding: 1rem;
+    border-radius: 5px;
+    background-color: #F3F3F3;
+    border: 0;
+}
+
+.funcionalidades .container-grid-funcionalidades .card i{
+    font-size: 40px;
+    color: #fff;
+    background-color: #ff0000;
+    padding: 8px 15px;
+    border-radius: 100px;
+}
+
+.funcionalidades .container-grid-funcionalidades .card h2 {
+    font-weight: 550;
+    margin-bottom: 10px;
+}
+
+.funcionalidades .container-grid-funcionalidades .card p {
+    margin-bottom: 10px;
+}

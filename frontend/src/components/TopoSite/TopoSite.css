@@ -33,4 +33,9 @@ section.topo-do-site .flex {
         display: none;
     }
 
+    /* BTN-ENTRAR */
+    #btn-perfil {
+        display: none;
+    }
+
 }

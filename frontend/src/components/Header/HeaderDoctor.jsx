@@ -2,14 +2,30 @@ import React from "react";
 import "./Header.css";
 import { useState } from "react";
 import logo from "../../assets/images/logoTWSMedTechPreto.png";
+import api from "../../api/api";
+import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function HeaderDoctor() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { doctor, setDoctor } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    try {
+      await api.post("/logoutDoctor", {}, { withCredentials: true });
+      setDoctor(null);
+      navigate("/loginDoctor");
+    } catch (err) {
+      console.error("Erro no logout:", err);
+      alert("Erro ao sair da conta");
+    }
+  }
 
   return (
     <header className="header">
       <div className="header-left">
-        <a href="/doctor">
+        <a href="#">
           <img src={logo} alt="TWS MedTech" className="logo" />
         </a>
         <nav className="navbar desktop-nav">
@@ -21,7 +37,7 @@ export default function HeaderDoctor() {
       <div className="header-right">
         <div id="btn-perfil">
           <a href="#">
-            <button>
+            <button onClick={handleLogout}>
               <i class="bi bi-person-fill"></i>
             </button>
           </a>
@@ -50,11 +66,11 @@ export default function HeaderDoctor() {
             Área do médico
           </a>
           <a
-            href="/register"
+            href="/doctor"
             id="mobile-login"
             onClick={() => setMenuOpen(false)}
           >
-            <i className="bi bi-person-fill"></i> Entrar
+            <i className="bi bi-person-fill"></i> Perfil
           </a>
         </nav>
       </div>
