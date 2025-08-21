@@ -1,0 +1,2 @@
+# 💉 TWSMedTech - A inovação que fortalece a prática cardiológica.
+- A TWSMedTech foi desenvolvida para enfrentar e solucionar desafios específicos que cardiologistas particulares e seus pacientes encontram no dia a dia da telemedicina. 
