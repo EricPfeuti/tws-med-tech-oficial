@@ -21,7 +21,7 @@ export default function Patient() {
   return (
     <div>
       <h1>Área do Paciente</h1>
-      <p>Bem-vindo, Dr. {patient.name} ao seu painel!</p>
+      <p>Bem-vindo, Paciente {patient.name} ao seu painel!</p>
       <button onClick={handleLogoutPatient}>SAIR</button>
     </div>
   );

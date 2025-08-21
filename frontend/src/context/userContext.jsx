@@ -10,66 +10,75 @@ export function UserProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkDoctorSession = async () => {
+    const checkSessions = async () => {
       try {
-        const res = await api.get("/checkDoctorSession", { withCredentials: true });
-        if (res.data.logado) {
-          setDoctor({
-            name: res.data.doctorName
-          });
+        const [resDoctor, resPatient] = await Promise.allSettled([
+          api.get("/checkDoctorSession", { withCredentials: true }),
+          api.get("/checkPatientSession", { withCredentials: true }),
+        ]);
+
+        if (resDoctor.status === "fulfilled" && resDoctor.value.data.logado) {
+          setDoctor({ name: resDoctor.value.data.doctorName });
         } else {
           setDoctor(null);
         }
+
+        if (resPatient.status === "fulfilled" && resPatient.value.data.logado) {
+          setPatient({ name: resPatient.value.data.patientName });
+        } else {
+          setPatient(null);
+        }
       } catch (err) {
-        console.error("Erro no login do médico", err);
+        console.error("Erro ao checar sessões:", err);
         setDoctor(null);
       } finally {
         setLoading(false);
       }
     };
 
-    const checkPatientSession = async () => {
-      try {
-        const res = await api.get("/checkPatientSession", { withCredentials: true });
-        if (res.data.logado) {
-          setPatient({
-            name: res.data.patientName
-          });
-        } else {
-          setPatient(null);
-        }
-      } catch (err) {
-        console.error("Erro no login do paciente", err);
-        setPatient(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkPatientSession();
-    checkDoctorSession();
+    checkSessions();
   }, []);
 
-  const logoutDoctor = async () => {
-    try {
-      await api.post("/logoutDoctor", {}, { withCredentials: true });
-      setDoctor(null);
-    } catch (err) {
-      console.error("Erro no logout do médico:", err);
+  const loginDoctor = async (credentials) => {
+    const res = await api.post("/loginDoctor", credentials, { withCredentials: true });
+    if (res.data.logado) {
+      setDoctor({ name: res.data.doctorName });
     }
+    return res.data;
+  };
+
+  const loginPatient = async (credentials) => {
+    const res = await api.post("/loginPatient", credentials, { withCredentials: true });
+    if (res.data.logado) {
+      setPatient({ name: res.data.patientName });
+    }
+    return res.data;
+  };
+
+  const logoutDoctor = async () => {
+    await api.post("/logoutDoctor", {}, { withCredentials: true });
+    setDoctor(null);
   };
 
   const logoutPatient = async () => {
-    try {
-      await api.post("/logoutPatient", {}, { withCredentials: true });
-      setPatient(null);
-    } catch (err) {
-      console.error("Erro no logout do paciente:", err);
-    }
+    await api.post("/logoutPatient", {}, { withCredentials: true });
+    setPatient(null);
   };
 
   return (
-    <UserContext.Provider value={{ doctor, setDoctor, patient, setPatient, loading, logoutDoctor,logoutPatient }}>
+    <UserContext.Provider
+      value={{
+        doctor,
+        setDoctor,
+        patient,
+        setPatient,
+        loading,
+        loginDoctor,
+        loginPatient,
+        logoutDoctor,
+        logoutPatient,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

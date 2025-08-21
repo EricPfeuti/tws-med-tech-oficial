@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(
   session({
+    name: "doctor.sid",
     secret: "segredo-super-secreto",
     resave: false,
     saveUninitialized: true,
@@ -105,7 +106,7 @@ app.post("/api/logoutDoctor", (req, res) => {
       return res.status(500).json({ erro: "Erro ao sair da conta" });
     }
 
-    res.clearCookie("connect.sid");
+    res.clearCookie("doctor.sid");
     res.json({ message: "Logout realizado com sucesso" });
   });
 });
@@ -183,7 +184,7 @@ app.post("/api/logoutPatient", (req, res) => {
       return res.status(500).json({ erro: "Erro ao sair da conta" });
     }
 
-    res.clearCookie("connect.sid");
+    res.clearCookie("doctor.sid");
     res.json({ message: "Logout realizado com sucesso" });
   });
 });
