@@ -1,15 +1,31 @@
 import React from "react";
 import "./Header.css";
-import logo from "../../assets/images/logoTWSMedTechPreto.png";
 import { useState } from "react";
+import logo from "../../assets/images/logoTWSMedTechPreto.png";
+import api from "../../api/api";
+import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
-export default function Header() {
+export default function HeaderPatient() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { patient, setPatient } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    try {
+      await api.post("/logoutPatient", {}, { withCredentials: true });
+      setPatient(null);
+      navigate("/loginPatient");
+    } catch (err) {
+      console.error("Erro no logout:", err);
+      alert("Erro ao sair da conta");
+    }
+  }
 
   return (
     <header className="header">
       <div className="header-left">
-        <a href="/">
+        <a href="#">
           <img src={logo} alt="TWS MedTech" className="logo" />
         </a>
         <nav className="navbar desktop-nav">
@@ -19,10 +35,10 @@ export default function Header() {
         </nav>
       </div>
       <div className="header-right">
-        <div id="btn-entrar">
-          <a href="/register">
-            <button>
-              <i class="bi bi-person-fill"></i> Entrar
+        <div id="btn-perfil">
+          <a href="#">
+            <button onClick={handleLogout}>
+              <i class="bi bi-person-fill"></i>
             </button>
           </a>
         </div>
@@ -39,7 +55,7 @@ export default function Header() {
           <i className="bi bi-x"></i>
         </button>
         <nav className="navbar mobile-nav">
-          <a href="#servicos" onClick={() => setMenuOpen(false)}>
+          <a href="#funcionalidades" onClick={() => setMenuOpen(false)}>
             Serviços
           </a>
           <a href="#membros" onClick={() => setMenuOpen(false)}>
@@ -48,8 +64,12 @@ export default function Header() {
           <a href="/signDoctor" onClick={() => setMenuOpen(false)}>
             Área do médico
           </a>
-          <a href="/register" id="mobile-login" onClick={() => setMenuOpen(false)}>
-            <i className="bi bi-person-fill"></i> Entrar
+          <a
+            href="/patient"
+            id="mobile-login"
+            onClick={() => setMenuOpen(false)}
+          >
+            <i className="bi bi-person-fill"></i> Perfil
           </a>
         </nav>
       </div>

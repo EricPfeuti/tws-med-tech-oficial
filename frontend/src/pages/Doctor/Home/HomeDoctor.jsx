@@ -1,7 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import useAuth from "../../../hooks/useAuth";
-import api from "../../../api/api";
 import HeaderDoctor from "../../../components/Header/HeaderDoctor";
 import TopoSiteDoctor from "../../../components/TopoSite/TopoSiteDoctor";
 import Footer from "../../../components/Footer/Footer";

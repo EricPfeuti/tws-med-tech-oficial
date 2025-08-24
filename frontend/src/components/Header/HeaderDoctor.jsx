@@ -42,7 +42,6 @@ export default function HeaderDoctor() {
             </button>
           </a>
         </div>
-        {/* Botão Menu Hambúrguer */}
         <button
           className="menu-btn mobile-only"
           onClick={() => setMenuOpen(true)}
@@ -59,7 +58,7 @@ export default function HeaderDoctor() {
           <a href="#funcionalidades" onClick={() => setMenuOpen(false)}>
             Serviços
           </a>
-          <a href="#quem-somos" onClick={() => setMenuOpen(false)}>
+          <a href="#membros" onClick={() => setMenuOpen(false)}>
             Quem somos
           </a>
           <a href="#" onClick={() => setMenuOpen(false)}>
@@ -75,7 +74,6 @@ export default function HeaderDoctor() {
         </nav>
       </div>
 
-      {/* Overlay para fechar clicando fora */}
       {menuOpen && (
         <div className="overlay" onClick={() => setMenuOpen(false)} />
       )}

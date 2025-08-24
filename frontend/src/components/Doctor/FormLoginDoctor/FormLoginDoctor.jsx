@@ -28,7 +28,7 @@ export default function FormLoginDoctor() {
       }
     } catch (err) {
       console.error("Erro no login:", err);
-      alert("Erro ao conectar com o servidor");
+      navigate("/erro");
     }
   }
 

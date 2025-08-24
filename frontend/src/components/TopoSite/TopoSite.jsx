@@ -18,7 +18,7 @@ export default function TopoSite() {
                         chat da sua teleconsulta.
                     </p>
                     <div id="btn-vermelho">
-                        <a href="#funcionalidades">
+                        <a href="#servicos">
                         <button type="button">CONHECER</button>
                         </a>
                     </div>
