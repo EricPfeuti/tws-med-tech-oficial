@@ -65,6 +65,16 @@ export function UserProvider({ children }) {
     setPatient(null);
   };
 
+  const editPatient = async (newName) => {
+    const res = await api.put("/editPatient", { newPatientName: newName }, { withCredentials: true });
+
+    if (res.data.sucesso) {
+      setPatient({ name: res.data.patientName });
+    }
+
+    return res.data;
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -77,6 +87,7 @@ export function UserProvider({ children }) {
         loginPatient,
         logoutDoctor,
         logoutPatient,
+        editPatient,
       }}
     >
       {children}

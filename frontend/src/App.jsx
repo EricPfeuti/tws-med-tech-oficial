@@ -11,6 +11,7 @@ import LoginPatient from "./pages/Patient/LoginPatient/LoginPatient";
 import Doctor from "./pages/Doctor/Home/HomeDoctor";
 import Patient from "./pages/Patient/Home/HomePatient";
 import Erro from "./pages/Erro/Erro";
+import EditPatientPage from "./pages/Patient/EditPatientPage/EditPatientPage";
 
 import PrivateDoctorRoute from "./utils/PrivateRouteDoctor";
 import PrivatePatientRoute from "./utils/PrivateRoutePatient";
@@ -42,6 +43,14 @@ function App() {
               </PrivatePatientRoute>
             }
           />
+          <Route 
+            path="/editPatient"
+            element={
+              <PrivatePatientRoute>
+                <EditPatientPage />
+              </PrivatePatientRoute>
+            }
+          ></Route>
           <Route path="*" element={<Erro />} />
         </Routes>
       </UserProvider>

@@ -91,6 +91,7 @@ app.post("/api/loginDoctor", async (req, res) => {
   }
 });
 
+// CHECANDO SESSÃO MÉDICO
 app.get("/api/checkDoctorSession", (req, res) => {
   if (req.session.doctorName) {
     res.json({ logado: true, doctorName: req.session.doctorName });
@@ -99,6 +100,7 @@ app.get("/api/checkDoctorSession", (req, res) => {
   }
 });
 
+// LOGOUT MÉDICO
 app.post("/api/logoutDoctor", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -110,6 +112,8 @@ app.post("/api/logoutDoctor", (req, res) => {
     res.json({ message: "Logout realizado com sucesso" });
   });
 });
+
+// <----------------------------------------------> 
 
 // CADASTRO PACIENTE
 app.post("/api/signPatient", async (req, res) => {
@@ -169,6 +173,7 @@ app.post("/api/loginPatient", async (req, res) => {
   }
 });
 
+// CHECANDO SESSÃO PACIENTE
 app.get("/api/checkPatientSession", (req, res) => {
   if (req.session.patientName) {
     res.json({ logado: true, patientName: req.session.patientName });
@@ -177,6 +182,7 @@ app.get("/api/checkPatientSession", (req, res) => {
   }
 });
 
+// LOGOUT PACIENTE
 app.post("/api/logoutPatient", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -188,6 +194,49 @@ app.post("/api/logoutPatient", (req, res) => {
     res.json({ message: "Logout realizado com sucesso" });
   });
 });
+
+// EDITAR DADOS PACIENTE
+app.put("/api/editPatient", async (req, res) => {
+  const client = new MongoClient(url);
+  try {
+    if (!req.session.patientName) {
+      return res.status(401).json({ erro: "Não autorizado" });
+    }
+
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    const collectionPacientes = banco.collection("pacientes");
+
+    const patientAtual = req.session.patientName;
+
+    const pacienteExistente = await collectionPacientes.findOne({
+      patientName: req.body.newPatientName,
+    });
+
+    if(pacienteExistente){
+      return res.status(400).json({ erro: "Nome já em uso." });
+    }
+
+    const result = await collectionPacientes.updateOne(
+      { patientName: patientAtual },
+      { $set: { patientAtual: req.body.newPatientName } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ erro: "Paciente não encontrado." })
+    }
+
+    req.session.patientName = req.body.newPatientName;
+
+    res.json({ sucesso: true, patientName: req.body.newPatientName });
+  } catch (erro) {
+    console.erro("Erro ao editar paciente:", erro);
+    res.status(500).json({ erro: "Erro ao editar paciente" });
+  } finally {
+    await client.close();
+  }
+  
+})
 
 app.listen(port, () => {
   console.log(`Servidor rodando em: http://localhost:${port}`);

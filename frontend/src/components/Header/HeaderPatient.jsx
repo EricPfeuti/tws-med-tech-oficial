@@ -2,25 +2,9 @@ import React from "react";
 import "./Header.css";
 import { useState } from "react";
 import logo from "../../assets/images/logoTWSMedTechPreto.png";
-import api from "../../api/api";
-import useAuth from "../../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 
 export default function HeaderPatient() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { patient, setPatient } = useAuth();
-  const navigate = useNavigate();
-
-  async function handleLogout() {
-    try {
-      await api.post("/logoutPatient", {}, { withCredentials: true });
-      setPatient(null);
-      navigate("/loginPatient");
-    } catch (err) {
-      console.error("Erro no logout:", err);
-      alert("Erro ao sair da conta");
-    }
-  }
 
   return (
     <header className="header">
@@ -36,8 +20,8 @@ export default function HeaderPatient() {
       </div>
       <div className="header-right">
         <div id="btn-perfil">
-          <a href="#">
-            <button onClick={handleLogout}>
+          <a href="/editPatient">
+            <button>
               <i class="bi bi-person-fill"></i>
             </button>
           </a>
@@ -65,7 +49,7 @@ export default function HeaderPatient() {
             Área do médico
           </a>
           <a
-            href="/patient"
+            href="/editPatient"
             id="mobile-login"
             onClick={() => setMenuOpen(false)}
           >
