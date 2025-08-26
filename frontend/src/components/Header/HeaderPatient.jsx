@@ -9,7 +9,7 @@ export default function HeaderPatient() {
   return (
     <header className="header">
       <div className="header-left">
-        <a href="#">
+        <a href="/patient">
           <img src={logo} alt="TWS MedTech" className="logo" />
         </a>
         <nav className="navbar desktop-nav">

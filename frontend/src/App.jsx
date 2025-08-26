@@ -12,6 +12,7 @@ import Doctor from "./pages/Doctor/Home/HomeDoctor";
 import Patient from "./pages/Patient/Home/HomePatient";
 import Erro from "./pages/Erro/Erro";
 import EditPatientPage from "./pages/Patient/EditPatientPage/EditPatientPage";
+import EditDoctorPage from "./pages/Doctor/EditDoctorPage/EditDoctorPage"
 
 import PrivateDoctorRoute from "./utils/PrivateRouteDoctor";
 import PrivatePatientRoute from "./utils/PrivateRoutePatient";
@@ -49,6 +50,14 @@ function App() {
               <PrivatePatientRoute>
                 <EditPatientPage />
               </PrivatePatientRoute>
+            }
+          ></Route>
+          <Route 
+            path="/editDoctor"
+            element={
+              <PrivateDoctorRoute>
+                <EditDoctorPage />
+              </PrivateDoctorRoute>
             }
           ></Route>
           <Route path="*" element={<Erro />} />

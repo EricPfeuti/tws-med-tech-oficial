@@ -113,6 +113,48 @@ app.post("/api/logoutDoctor", (req, res) => {
   });
 });
 
+// EDITAR DADOS MÉDICO
+app.put("/api/editDoctor", async (req, res) => {
+  const client = new MongoClient(url);
+  try {
+    if (!req.session.doctorName) {
+      return res.status(401).json({ erro: "Não autorizado" });
+    }
+
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    const collectionMedicos = banco.collection("medicos");
+
+    const novoNomeMedico = req.body.newDoctorName;
+
+    const medicoExistente = await collectionMedicos.findOne({
+      doctorName: novoNomeMedico,
+    });
+
+    if(medicoExistente){
+      return res.status(400).json({ erro: "Nome já em uso." });
+    }
+
+    const result = await collectionMedicos.updateOne(
+      { doctorName: req.session.doctorName },
+      { $set: { doctorName: novoNomeMedico } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ erro: "Médico não encontrado." })
+    }
+
+    req.session.doctorName = novoNomeMedico;
+
+    res.json({ sucesso: true, doctorName: novoNomeMedico });
+  } catch (erro) {
+    console.erro("Erro ao editar médico:", erro);
+    res.status(500).json({ erro: "Erro ao editar médico" });
+  } finally {
+    await client.close();
+  }
+});
+
 // <----------------------------------------------> 
 
 // CADASTRO PACIENTE

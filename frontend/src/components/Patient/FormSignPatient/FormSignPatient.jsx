@@ -19,7 +19,7 @@ export default function FormSignPatient() {
       );
 
       if (resp.status === 201 || resp.status === 200) {
-        navigate("/loginDoctor");
+        navigate("/loginPatient");
       } else {
         navigate("/erro");
       }

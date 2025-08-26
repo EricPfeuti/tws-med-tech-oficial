@@ -36,26 +36,26 @@ export default function FormLoginPatient() {
             <h2>Login Paciente - TWSMedTech</h2>
         </section>
 
-        <form onSubmit={handleLoginPatient} id="form" class="form">
+        <form onSubmit={handleLoginPatient} id="form" className="form">
             <div class="form-content">
-            <label for="patientName">Nome:</label>
-            <input
-                type="text"
-                value={patientName}
-                onChange={(e)=> setPatientName(e.target.value)}
-                placeholder="Digite seu nome:"
-                required
-            />
+                <label for="patientName">Nome:</label>
+                <input
+                    type="text"
+                    value={patientName}
+                    onChange={(e)=> setPatientName(e.target.value)}
+                    placeholder="Digite seu nome:"
+                    required
+                />
             </div>
             <div class="form-content">
-            <label for="patientPassword">Senha:</label>
-            <input
-                type="password"
-                value={patientPassword}
-                onChange={(e)=> setPatientPassword(e.target.value)}
-                placeholder="Digite a sua senha:"
-                required
-            />
+                <label for="patientPassword">Senha:</label>
+                <input
+                    type="password"
+                    value={patientPassword}
+                    onChange={(e)=> setPatientPassword(e.target.value)}
+                    placeholder="Digite a sua senha:"
+                    required
+                />
             </div>
             <p>
             Não tem uma conta? <a href="/signPatient">Cadastrar</a>

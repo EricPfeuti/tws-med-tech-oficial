@@ -40,7 +40,9 @@ export function UserProvider({ children }) {
   }, []);
 
   const loginDoctor = async (credentials) => {
-    const res = await api.post("/loginDoctor", credentials, { withCredentials: true });
+    const res = await api.post("/loginDoctor", credentials, {
+      withCredentials: true,
+    });
     if (res.data.logado) {
       setDoctor({ name: res.data.doctorName });
     }
@@ -48,7 +50,9 @@ export function UserProvider({ children }) {
   };
 
   const loginPatient = async (credentials) => {
-    const res = await api.post("/loginPatient", credentials, { withCredentials: true });
+    const res = await api.post("/loginPatient", credentials, {
+      withCredentials: true,
+    });
     if (res.data.logado) {
       setPatient({ name: res.data.patientName });
     }
@@ -65,14 +69,41 @@ export function UserProvider({ children }) {
     setPatient(null);
   };
 
-  const editPatient = async (newName) => {
-    const res = await api.put("/editPatient", { newPatientName: newName }, { withCredentials: true });
+  async function editPatient(newPatientName) {
+    try {
+      const res = await api.put(
+        "/editPatient",
+        { newPatientName },
+        { withCredentials: true }
+      );
 
-    if (res.data.sucesso) {
-      setPatient({ name: res.data.patientName });
+      if (res.data.sucesso) {
+        setPatient({ ...patient, name: res.data.patientName });
+      }
+
+      return res.data;
+    } catch {
+      console.error("Erro ao editar paciente.");
+      return { sucesso: false, msg: "Erro ao editar paciente." };
     }
+  }
 
-    return res.data;
+  async function editDoctor(newDoctorName) {
+    try {
+      const res = await api.put(
+        "/editDoctor",
+        { newDoctorName },
+        { withCredentials: true }
+      );
+
+      if(res.data.sucesso) {
+        setDoctor({ ...doctor, name: res.data.doctorName });
+      }
+
+    } catch {
+      console.error("Erro ao editar médico.");
+      return { sucesso: false, msg: "Erro ao editar médico." };
+    }
   }
 
   return (
@@ -88,6 +119,7 @@ export function UserProvider({ children }) {
         logoutDoctor,
         logoutPatient,
         editPatient,
+        editDoctor,
       }}
     >
       {children}
