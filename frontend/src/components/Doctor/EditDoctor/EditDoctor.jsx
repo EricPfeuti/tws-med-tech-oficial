@@ -5,7 +5,7 @@ import logoMiniatura from "../../../assets/images/logoMiniaturaTWSMedTech.png";
 
 export default function EditDoctor() {
   const { doctor, editDoctor, logoutDoctor } = useAuth();
-  const [newDoctorName, setNewName] = useState(doctor?.name || "");
+  const [newDoctorName, setNewNameDoctor] = useState(doctor?.name || "");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ export default function EditDoctor() {
               id="name"
               type="text"
               value={newDoctorName}
-              onChange={(e) => setNewName(e.target.value)}
+              onChange={(e) => setNewNameDoctor(e.target.value)}
               required
             />
           </div>

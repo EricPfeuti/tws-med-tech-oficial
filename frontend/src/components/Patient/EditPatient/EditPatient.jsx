@@ -5,18 +5,18 @@ import useAuth from "../../../hooks/useAuth";
 
 export default function EditPatient() {
   const { patient, editPatient, logoutPatient } = useAuth();
-  const [newName, setNewName] = useState(patient?.name || "");
+  const [newNamePatient, setNewNamePatient] = useState(patient?.name || "");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmitPatient = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
     try {
-      const res = await editPatient(newName);
+      const res = await editPatient(newNamePatient);
       if (res.sucesso) {
         setMessage("Nome atualizado com sucesso!");
         setTimeout(() => navigate("/patient"), 1500);
@@ -30,7 +30,7 @@ export default function EditPatient() {
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogoutPatient = async () => {
     try {
       await logoutPatient();
       navigate("/loginPatient");
@@ -51,20 +51,20 @@ export default function EditPatient() {
             <img src={logoMiniatura} alt="Logo Miniatura" />
             <h2>Editar Dados Paciente - TWSMedTech</h2>
             </section>
-            <form onSubmit={handleSubmit} id="form" className="form">
+            <form onSubmit={handleSubmitPatient} id="form" className="form">
             <div className="form-content">
                 <label for="name">Insira aqui seu novo nome:</label>
                 <input
                 id="name"
                 type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
+                value={newNamePatient}
+                onChange={(e) => setNewNamePatient(e.target.value)}
                 required
                 />
             </div>
             <button>{loading ? "Salvando..." : "SALVAR ALTERAÇÕES"}</button>
-            <button type="button" onClick={handleLogout}>
-                SAIR
+            <button type="button" onClick={handleLogoutPatient}>
+              SAIR
             </button>
             </form>
             {message && <p>{message}</p>}

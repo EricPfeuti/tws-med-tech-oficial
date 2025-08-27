@@ -249,10 +249,10 @@ app.put("/api/editPatient", async (req, res) => {
     const banco = client.db(TWSMedTech);
     const collectionPacientes = banco.collection("pacientes");
 
-    const novoNome = req.body.newPatientName;
+    const novoNomePaciente = req.body.newPatientName;
 
     const pacienteExistente = await collectionPacientes.findOne({
-      patientName: novoNome,
+      patientName: novoNomePaciente,
     });
 
     if(pacienteExistente){
@@ -261,16 +261,16 @@ app.put("/api/editPatient", async (req, res) => {
 
     const result = await collectionPacientes.updateOne(
       { patientName: req.session.patientName },
-      { $set: { patientName: novoNome } }
+      { $set: { patientName: novoNomePaciente } }
     );
 
     if (result.modifiedCount === 0) {
       return res.status(404).json({ erro: "Paciente não encontrado." })
     }
 
-    req.session.patientName = novoNome;
+    req.session.patientName = novoNomePaciente;
 
-    res.json({ sucesso: true, patientName: novoNome });
+    res.json({ sucesso: true, patientName: novoNomePaciente });
   } catch (erro) {
     console.erro("Erro ao editar paciente:", erro);
     res.status(500).json({ erro: "Erro ao editar paciente" });
