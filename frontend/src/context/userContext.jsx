@@ -95,11 +95,10 @@ export function UserProvider({ children }) {
         { newDoctorName },
         { withCredentials: true }
       );
-
       if(res.data.sucesso) {
         setDoctor({ ...doctor, name: res.data.doctorName });
       }
-
+      return res
     } catch {
       console.error("Erro ao editar médico.");
       return { sucesso: false, msg: "Erro ao editar médico." };

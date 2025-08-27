@@ -1,7 +1,7 @@
 import React from "react";
-import ErroLogin from "../../components/ErroLogin/ErroLogin";
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
+import ErroLogin from "../../../components/Error/ErroLogin";
+import Header from "../../../components/Header/Header";
+import Footer from "../../../components/Footer/Footer";
 
 export default function Erro() {
   return (

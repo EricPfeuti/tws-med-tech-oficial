@@ -45,7 +45,7 @@ export default function HeaderDoctor() {
           <a href="#membros" onClick={() => setMenuOpen(false)}>
             Quem somos
           </a>
-          <a href="#" onClick={() => setMenuOpen(false)}>
+          <a href="/editDoctor" onClick={() => setMenuOpen(false)}>
             Área do médico
           </a>
           <a

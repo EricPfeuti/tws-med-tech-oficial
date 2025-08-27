@@ -46,29 +46,29 @@ export default function EditPatient() {
 
   return (
     <section id="formulario-editar" className="formulario-editar">
-        <div className="container-form">
-            <section class="container-header">
-            <img src={logoMiniatura} alt="Logo Miniatura" />
-            <h2>Editar Dados Paciente - TWSMedTech</h2>
-            </section>
-            <form onSubmit={handleSubmitPatient} id="form" className="form">
-            <div className="form-content">
-                <label for="name">Insira aqui seu novo nome:</label>
-                <input
-                id="name"
-                type="text"
-                value={newNamePatient}
-                onChange={(e) => setNewNamePatient(e.target.value)}
-                required
-                />
-            </div>
-            <button>{loading ? "Salvando..." : "SALVAR ALTERAÇÕES"}</button>
-            <button type="button" onClick={handleLogoutPatient}>
-              SAIR
-            </button>
-            </form>
-            {message && <p>{message}</p>}
-        </div>
+      <div className="container-form">
+        <section class="container-header">
+          <img src={logoMiniatura} alt="Logo Miniatura" />
+          <h2>Editar Dados Paciente - TWSMedTech</h2>
+        </section>
+        <form onSubmit={handleSubmitPatient} id="form" className="form">
+          <div className="form-content">
+            <label for="name">Insira aqui seu novo nome:</label>
+            <input
+              id="name"
+              type="text"
+              value={newNamePatient}
+              onChange={(e) => setNewNamePatient(e.target.value)}
+              required
+            />
+          </div>
+          <button>{loading ? "Salvando..." : "SALVAR ALTERAÇÕES"}</button>
+          <button type="button" onClick={handleLogoutPatient}>
+            SAIR
+          </button>
+        </form>
+        {message && <p>{message}</p>}
+      </div>
     </section>
   );
 }

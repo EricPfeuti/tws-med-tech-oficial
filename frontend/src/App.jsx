@@ -3,14 +3,14 @@ import { UserProvider } from "./context/userContext";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 import Index from "./pages/index";
-import Register from "./pages/Register/Register";
+import Register from "./pages/interfaces/mail/Register";
 import SignDoctor from "./pages/Doctor/SignDoctor/SignDoctor";
 import LoginDoctor from "./pages/Doctor/LoginDoctor/LoginDoctor";
 import SignPatient from "./pages/Patient/SignPatient/SignPatient";
 import LoginPatient from "./pages/Patient/LoginPatient/LoginPatient";
-import Doctor from "./pages/Doctor/Home/HomeDoctor";
-import Patient from "./pages/Patient/Home/HomePatient";
-import Erro from "./pages/Erro/Erro";
+import Doctor from "./pages/interfaces/Home/HomeDoctor";
+import Patient from "./pages/interfaces/Home/HomePatient";
+import Erro from "./pages/interfaces/Error/Erro";
 import EditPatientPage from "./pages/Patient/EditPatientPage/EditPatientPage";
 import EditDoctorPage from "./pages/Doctor/EditDoctorPage/EditDoctorPage"
 

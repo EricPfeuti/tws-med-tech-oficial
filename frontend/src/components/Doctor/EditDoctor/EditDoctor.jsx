@@ -16,8 +16,8 @@ export default function EditDoctor() {
     setMessage("");
 
     try {
-      const res = await editDoctor(newDoctorName);
-      if (res.sucesso) {
+      const res = await editDoctor(newDoctorName)
+      if (res.data.sucesso) {
         setMessage("Nome atualizado com sucesso!");
         setTimeout(() => navigate("/doctor"), 1500);
       } else {

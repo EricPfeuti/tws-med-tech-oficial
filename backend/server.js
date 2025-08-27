@@ -145,10 +145,9 @@ app.put("/api/editDoctor", async (req, res) => {
     }
 
     req.session.doctorName = novoNomeMedico;
-
-    res.json({ sucesso: true, doctorName: novoNomeMedico });
+    res.json({ sucesso: true, doctorName: novoNomeMedico })
   } catch (erro) {
-    console.erro("Erro ao editar médico:", erro);
+    console.error("Erro ao editar médico:", erro);
     res.status(500).json({ erro: "Erro ao editar médico" });
   } finally {
     await client.close();
