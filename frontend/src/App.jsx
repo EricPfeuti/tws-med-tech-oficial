@@ -4,15 +4,15 @@ import { UserProvider } from "./context/userContext";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import Index from "./pages/index";
 import Register from "./pages/interfaces/mail/Register";
-import SignDoctor from "./pages/Doctor/SignDoctor/SignDoctor";
-import LoginDoctor from "./pages/Doctor/LoginDoctor/LoginDoctor";
-import SignPatient from "./pages/Patient/SignPatient/SignPatient";
-import LoginPatient from "./pages/Patient/LoginPatient/LoginPatient";
+import SignDoctor from "./pages/Screens/Doctor/SignDoctor/SignDoctor";
+import LoginDoctor from "./pages/Screens/Doctor/LoginDoctor/LoginDoctor";
+import SignPatient from "./pages/Screens/Patient/SignPatient/SignPatient";
+import LoginPatient from "./pages/Screens/Patient/LoginPatient/LoginPatient";
 import Doctor from "./pages/interfaces/Home/HomeDoctor";
 import Patient from "./pages/interfaces/Home/HomePatient";
 import Erro from "./pages/interfaces/Error/Erro";
-import EditPatientPage from "./pages/Patient/EditPatientPage/EditPatientPage";
-import EditDoctorPage from "./pages/Doctor/EditDoctorPage/EditDoctorPage"
+import EditPatientPage from "./pages/Screens/Patient/EditPatientPage/EditPatientPage";
+import EditDoctorPage from "./pages/Screens/Doctor/EditDoctorPage/EditDoctorPage";
 
 import PrivateDoctorRoute from "./utils/PrivateRouteDoctor";
 import PrivatePatientRoute from "./utils/PrivateRoutePatient";
@@ -44,7 +44,7 @@ function App() {
               </PrivatePatientRoute>
             }
           />
-          <Route 
+          <Route
             path="/editPatient"
             element={
               <PrivatePatientRoute>
@@ -52,7 +52,7 @@ function App() {
               </PrivatePatientRoute>
             }
           ></Route>
-          <Route 
+          <Route
             path="/editDoctor"
             element={
               <PrivateDoctorRoute>
@@ -61,6 +61,9 @@ function App() {
             }
           ></Route>
           <Route path="*" element={<Erro />} />
+          <Route path="/meeting/:roomName" element={<MeetingRoom />} />
+          <Route path="/patient/meetings" element={<PatientMeetings />} />
+          <Route path="/meeting/:roomName" element={<MeetingRoom />} />
         </Routes>
       </UserProvider>
     </Router>
