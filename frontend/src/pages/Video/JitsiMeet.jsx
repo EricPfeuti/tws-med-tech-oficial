@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import api from "../services/api";
+import api from "../../api/api";
 
 function base64ToUint8Array(base64) {
   const binary = atob(base64);
@@ -35,7 +35,6 @@ export default function MeetingRoom() {
     const start = async () => {
       try {
         await ensureScript();
-        // 1) Criar iframe Jitsi
         apiRef.current = new window.JitsiMeetExternalAPI("meet.jit.si", {
           roomName,
           parentNode: containerRef.current,
@@ -44,28 +43,23 @@ export default function MeetingRoom() {
           configOverwrite: {
             e2ee: {
               enabled: true,
-              externallyManagedKey: true, // chave será aplicada via API
+              externallyManagedKey: true
             },
           },
           userInfo: {},
         });
 
-        // 2) Pegar a chave do backend
         const res = await api.get(`/meeting-key/${roomName}`);
         if (!mounted) return;
         if (res.data.sucesso && res.data.key) {
-          // backend devolveu chave base64 (32 bytes)
           const keyBytes = base64ToUint8Array(res.data.key);
-          // aplica chave à sessão local (todos participantes devem ter a mesma)
           apiRef.current.executeCommand("setMediaEncryptionKey", keyBytes);
           setLoadingKey(false);
         } else {
           console.error("Não recebeu chave:", res.data);
           alert("Não autorizado a obter chave E2EE desta reunião");
-          // opcional: sair da página
         }
 
-        // listeners (opcional)
         apiRef.current.addEventListener("participantJoined", (e) => {
           console.log("participantJoined", e);
         });

@@ -13,6 +13,7 @@ import Patient from "./pages/interfaces/Home/HomePatient";
 import Erro from "./pages/interfaces/Error/Erro";
 import EditPatientPage from "./pages/Screens/Patient/EditPatientPage/EditPatientPage";
 import EditDoctorPage from "./pages/Screens/Doctor/EditDoctorPage/EditDoctorPage";
+import MeetingRoom from "./pages/Video/JitsiMeet";
 
 import PrivateDoctorRoute from "./utils/PrivateRouteDoctor";
 import PrivatePatientRoute from "./utils/PrivateRoutePatient";
@@ -62,8 +63,7 @@ function App() {
           ></Route>
           <Route path="*" element={<Erro />} />
           <Route path="/meeting/:roomName" element={<MeetingRoom />} />
-          <Route path="/patient/meetings" element={<PatientMeetings />} />
-          <Route path="/meeting/:roomName" element={<MeetingRoom />} />
+          <Route path="/allow-participant" element={<MeetingRoom />} />
         </Routes>
       </UserProvider>
     </Router>
