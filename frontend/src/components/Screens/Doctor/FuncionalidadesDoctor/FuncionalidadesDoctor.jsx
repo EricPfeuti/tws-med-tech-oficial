@@ -1,7 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import "./FuncionalidadesDoctor.css";
+import api from "../../../../api/api";
+import { useNavigate } from "react-router-dom";
 
 export default function FuncionalidadesDoctor() {
+
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleCreateMeeting = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await api.post("meetings/create", {}, { withCredentials: true });
+      
+      if (res.data.sucesso) {
+        const { roomName } = res.data.meeting;
+        navigate(`/doctor/meeting/${roomName}`);
+      }
+    } catch (err) {
+      console.error("Erro ao criar reunião:", err);
+      alert("Erro ao criar reunião. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section id="funcionalidades" className="funcionalidades">
@@ -21,9 +45,9 @@ export default function FuncionalidadesDoctor() {
             real.
           </p>
           <div id="btn-vermelho">
-            <a href="/doctor/meeting/create">
-              <button>CRIAR</button>
-            </a>
+            <form onSubmit={handleCreateMeeting}>
+              <button type="submit" id="btn-vermelho" disabled={loading}>{loading ? "Criando..." : "Criar Consulta"}</button>
+            </form>
           </div>
         </div>
         <div className="card">

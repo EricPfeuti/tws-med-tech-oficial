@@ -29,7 +29,7 @@ export default function ServicosPatient() {
             </div>
           </div><br />
           <div id="btn-saiba-mais">
-            <a href="/patient/meeting/join"><button>ENTRAR</button></a>
+            <a href="#"><button>ENTRAR</button></a>
           </div>
         </div>
         <div className="card">

@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import HeaderDoctor from "../../../../components/Web/Header/HeaderDoctor";
+import Footer from "../../../../components/Web/Footer/Footer";
 
 export default function JitsiMeet() {
   const { roomName } = useParams();
@@ -34,8 +36,12 @@ export default function JitsiMeet() {
   }, [roomName]);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", backgroundColor: "#000" }}>
-      <div ref={jitsiContainerRef} style={{ width: "100%", height: "100%" }} />
+    <div>
+      <HeaderDoctor />
+      <main>
+        <div ref={jitsiContainerRef} className="consulta"/>
+      </main>
+      <Footer />
     </div>
   );
 }
