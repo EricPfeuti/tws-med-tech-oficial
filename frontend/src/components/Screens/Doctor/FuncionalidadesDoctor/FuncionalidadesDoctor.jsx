@@ -1,33 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import "./FuncionalidadesDoctor.css";
-import api from "../../../../api/api";
-import { useNavigate } from "react-router-dom";
 
 export default function FuncionalidadesDoctor() {
-  const [loading, setLoading] = useState(false);
-  const [patientToAllow, setPatientToAllow] = useState("");
-  const navigate = useNavigate();
-
-  const handleCreate = async () => {
-    setLoading(true);
-    try {
-      const res = await api.post("/create-meeting");
-      const roomName = res.data.roomName;
-      if (patientToAllow) {
-        await api.post("/allow-participant", {
-          roomName,
-          participantType: "patient",
-          participantName: patientToAllow,
-        });
-      }
-      navigate(`/meeting/${roomName}`);
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao criar reunião");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <section id="funcionalidades" className="funcionalidades">
@@ -46,14 +20,9 @@ export default function FuncionalidadesDoctor() {
             Comece agora uma teleconsulta com um de seus pacientes, em tempo
             real.
           </p>
-          <input
-            placeholder="Paciente a autorizar (opcional)"
-            value={patientToAllow}
-            onChange={(e) => setPatientToAllow(e.target.value)}
-          />
           <div id="btn-vermelho">
-            <a href="#">
-              <button onClick={handleCreate} disabled={loading}>{loading ? "Criando..." : "Criar Reunião"}</button>
+            <a href="/doctor/meeting/create">
+              <button>CRIAR</button>
             </a>
           </div>
         </div>

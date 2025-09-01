@@ -13,10 +13,13 @@ import Patient from "./pages/interfaces/Home/HomePatient";
 import Erro from "./pages/interfaces/Error/Erro";
 import EditPatientPage from "./pages/Screens/Patient/EditPatientPage/EditPatientPage";
 import EditDoctorPage from "./pages/Screens/Doctor/EditDoctorPage/EditDoctorPage";
-import MeetingRoom from "./pages/Video/JitsiMeet";
+
+import CreateMeeting from "./pages/Screens/Doctor/Video/CreateMeeting";
+import JoinMeeting from "./pages/Screens/Patient/Video/JoinMeeting";
 
 import PrivateDoctorRoute from "./utils/PrivateRouteDoctor";
 import PrivatePatientRoute from "./utils/PrivateRoutePatient";
+import JitsiMeet from "./pages/Screens/Video/JitsiMeet";
 
 function App() {
   return (
@@ -61,9 +64,40 @@ function App() {
               </PrivateDoctorRoute>
             }
           ></Route>
+          <Route
+            path="/doctor/meeting/create"
+            element={
+              <PrivateDoctorRoute>
+                <CreateMeeting />
+              </PrivateDoctorRoute>
+            }
+          />
+          <Route
+            path="/patient/meeting/join"
+            element={
+              <PrivatePatientRoute>
+                <JoinMeeting />
+              </PrivatePatientRoute>
+            }
+          />
+          <Route
+            path="/doctor/meeting/room/:roomName"
+            element={
+              <PrivateDoctorRoute>
+                <JitsiMeet />
+              </PrivateDoctorRoute>
+            }
+          />
+
+          <Route
+            path="/patient/meeting/room/:roomName"
+            element={
+              <PrivatePatientRoute>
+                <JitsiMeet />
+              </PrivatePatientRoute>
+            }
+          />
           <Route path="*" element={<Erro />} />
-          <Route path="/meeting/:roomName" element={<MeetingRoom />} />
-          <Route path="/allow-participant" element={<MeetingRoom />} />
         </Routes>
       </UserProvider>
     </Router>

@@ -1,34 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./Servicos.css";
-import { useNavigate } from "react-router-dom";
-import useAuth from "../../../hooks/useAuth";
-import api from "../../../api/api";
 
 export default function ServicosPatient() {
-  const { patient } = useAuth();
-  const [meetings, setMeetings] = useState([]);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchMeetings = async () => {
-      try {
-        const res = await api.get("/api/allowed-meetings", {
-          withCredentials: true,
-        });
-        if (res.data.sucesso) {
-          setMeetings(res.data.collectionReunioes);
-        }
-      } catch (err) {
-        console.error("Erro ao buscar reuniões:", err);
-      }
-    };
-
-    fetchMeetings();
-  }, []);
-
-  const handleJoin = (roomName) => {
-    navigate(`/meeting/${roomName}`);
-  };
 
   return (
     <section id="servicos" className="servicos">
@@ -37,22 +10,27 @@ export default function ServicosPatient() {
       </h1>
       <br />
       <div className="container-grid-cards-servicos">
-        <div style={{ maxWidth: "600px", margin: "50px auto" }}>
-          <h2>Reuniões disponíveis para {patient?.name}</h2>
-          {meetings.length === 0 && <p>Nenhuma reunião disponível</p>}
-          <ul>
-            {meetings.map((room) => (
-              <li key={room.roomName} style={{ marginBottom: "10px" }}>
-                <span>{room.roomName}</span>
-                <button
-                  onClick={() => handleJoin(room.roomName)}
-                  style={{ marginLeft: "10px" }}
-                >
-                  Entrar
-                </button>
-              </li>
-            ))}
-          </ul>
+        <div className="card">
+          <div className="bg">
+            <h2>Teleconsultas</h2>
+            <p>
+              Consultas em tempo real com médicos cardiologistas.
+            </p><br />
+            <div className="circles">
+              <div className="circle">
+                Consulta Médica
+              </div>
+              <div className="circle">
+                Videoconferência
+              </div>
+              <div className="circle">
+                Tecnologia
+              </div>
+            </div>
+          </div><br />
+          <div id="btn-saiba-mais">
+            <a href="/patient/meeting/join"><button>ENTRAR</button></a>
+          </div>
         </div>
         <div className="card">
           <div className="bg">

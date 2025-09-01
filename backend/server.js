@@ -5,8 +5,7 @@ const bcrypt = require("bcrypt");
 const methodOverride = require("method-override");
 const path = require("path");
 const cors = require("cors");
-const crypto = require("crypto");
-require('dotenv').config();
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 const port = 3001;
@@ -35,160 +34,115 @@ const TWSMedTech = "TWSMedTech";
 
 app.use(express.static(path.join(__dirname, "frontend/build")));
 
-const chaveCriptografaReuniao = process.env.MEETING_MASTER_KEY;
-if(!chaveCriptografaReuniao) {
-  console.warn("WARNING: MEETING_MASTER_KEY não definido. Em produção defina uma chave segura em .env");
-}
-
-const reuniaoCriptografada = chaveCriptografaReuniao ? Buffer.from(chaveCriptografaReuniao, 'base64') : null;
-
-function encryptBuffer(buffer) {
-  if(!reuniaoCriptografada) throw new Error("Reunião Criptografa não configurada");
-  const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv("aes-256-gcm", reuniaoCriptografada, iv);
-  const cipherBuf = Buffer.concat([cipher.update(buffer), cipher.final()]);
-  const tag = cipher.getAuthTag();
-  return {
-    cipherText: cipherBuf.toString("base64"),
-    iv: iv.toString("base64"),
-    tag: tag.toString("base64"),
-  }
-}
-
-function decryptToBuffer({ cipherText, iv, tag }) {
-  if (!chaveCriptografaReuniao) throw new Error("MASTER_KEY não configurada");
-  const decipher = crypto.createDecipheriv("aes-256-gcm", chaveCriptografaReuniao, Buffer.from(iv, 'base64'));
-  decipher.setAuthTag(Buffer.from(tag, 'base64'));
-  const plain = Buffer.concat([decipher.update(Buffer.from(cipherText, 'base64')), decipher.final()]);
-  return plain;
-}
-
-// CRIANDO REUNIÃO
-app.post('/api/create-meeting', async (req, res) => {
+// CRIAR REUNIÃO
+app.post("/api/create-meeting", async (req, res) => {
   if (!req.session.doctorName) {
-    return res.status(401).json({ erro: "Apenas médicos podem criar reuniões" });
+    return res.status(401).json({ erro: "Apenas médico pode criar reunião" });
   }
+
+  const roomName = `consulta-${uuidv4()}`;
 
   const client = new MongoClient(url);
   try {
     await client.connect();
     const db = client.db(TWSMedTech);
-    const collectionReunioes = db.collection('reuniões');
-
-    const roomName = `tws-${crypto.randomBytes(12).toString('hex')}`; 
-
-    const key = crypto.randomBytes(32);
-    
-    const encrypted = encryptBuffer(key);
-
-    const meetingDoc = {
+    await db.collection("reuniões").insertOne({
       roomName,
-      ownerType: 'doctor',
-      ownerName: req.session.doctorName,
-      encryptedKey: encrypted.cipherText,
-      iv: encrypted.iv,
-      tag: encrypted.tag,
-      allowed: [],
+      doctorName: req.session.doctorName,
+      patient: [],          
       createdAt: new Date(),
-    };
-
-    await collectionReunioes.insertOne(meetingDoc);
-
-    res.json({ sucesso: true, roomName });
+    });
+    res.json({ roomName });
   } catch (err) {
-    console.error("create-meeting error:", err);
+    console.error(err);
     res.status(500).json({ erro: "Erro ao criar reunião" });
   } finally {
     await client.close();
   }
 });
 
-// AUTORIZANDO PACIENTE
-app.post('/api/allow-participant', async (req, res) => {
-  const { roomName, participantType, participantName } = req.body;
+// AUTORIZAR PACIENTE
+app.post("/api/allow-patient", async (req, res) => {
+  const { roomName, patientName } = req.body;
 
-  if (!req.session.doctorName) return res.status(401).json({ erro: "Apenas médico" });
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Apenas médico pode autorizar" });
+  }
 
   const client = new MongoClient(url);
   try {
     await client.connect();
     const db = client.db(TWSMedTech);
-    const collectionReunioes = db.collection('reuniões');
 
-    const reuniao = await collectionReunioes.findOne({ roomName });
-    if (!reuniao) return res.status(404).json({ erro: "Reunião não encontrada" });
-    if (reuniao.ownerName !== req.session.doctorName) return res.status(403).json({ erro: "Não autorizado" });
+    const meeting = await db.collection("reuniões").findOne({ roomName });
+    if (!meeting) return res.status(404).json({ erro: "Reunião não encontrada" });
 
-    const already = reuniao.allowed.some(a => a.type === participantType && a.name === participantName);
-    if (!already) {
-      await collectionReunioes.updateOne({ roomName }, { $push: { allowed: { type: participantType, name: participantName } }});
+    const paciente = await db.collection("pacientes").findOne({ patientName });
+    if (!paciente) {
+      return res.status(400).json({ erro: "Paciente não cadastrado" });
     }
 
-    res.json({ sucesso: true });
+    await db.collection("reuniões").updateOne(
+      { roomName },
+      { $addToSet: { patients: patientName } }
+    );
+
+    res.json({ sucesso: true, roomName, patientName });
   } catch (err) {
-    console.error("allow-participant err:", err);
-    res.status(500).json({ erro: "Erro ao autorizar participante" });
+    console.error(err);
+    res.status(500).json({ erro: "Erro ao autorizar paciente" });
   } finally {
     await client.close();
   }
 });
 
-// BUSCANDO CHAVE REUNIÃO
-app.get('/api/meeting-key/:roomName', async (req, res) => {
-  const roomName = req.params.roomName;
-  const client = new MongoClient(url);
+// PACIENTE ENTRA
+app.get("/api/join-meeting/:roomName", async (req, res) => {
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Paciente não logado" });
+  }
 
+  const { roomName } = req.params;
+  const client = new MongoClient(url);
   try {
     await client.connect();
     const db = client.db(TWSMedTech);
-    const collectionReunioes = db.collection('reuniões');
 
-    const reuniao = await collectionReunioes.findOne({ roomName });
-    if (!reuniao) return res.status(404).json({ erro: "Reunião não encontrada" });
+    const meeting = await db.collection("reuniões").findOne({ roomName });
+    if (!meeting) return res.status(404).json({ erro: "Reunião não encontrada" });
 
-    const userDoctor = req.session.doctorName;
-    const userPatient = req.session.patientName;
-    const isOwner = reuniao.ownerName === userDoctor;
-    const isAllowedPatient = reuniao.allowed.some(a => a.type === 'patient' && a.name === userPatient);
-    const isAllowedDoctor = reuniao.allowed.some(a => a.type === 'doctor' && a.name === userDoctor); 
-
-    if (!isOwner && !isAllowedPatient && !isAllowedDoctor) {
-      return res.status(403).json({ erro: "Não autorizado a obter chave" });
+    if (!meeting.patients.includes(req.session.patientName)) {
+      return res.status(403).json({ erro: "Paciente não autorizado" });
     }
 
-    const plainKeyBuf = decryptToBuffer({
-      cipherText: reuniao.encryptedKey,
-      iv: reuniao.iv,
-      tag: reuniao.tag,
-    });
-
-    res.json({ sucesso: true, key: plainKeyBuf.toString('base64') });
+    const jitsiURL = `https://meet.jit.si/${roomName}`;
+    res.json({ sucesso: true, jitsiURL, roomName });
   } catch (err) {
-    console.error("reuniao-key err:", err);
-    res.status(500).json({ erro: "Erro ao obter chave" });
+    console.error(err);
+    res.status(500).json({ erro: "Erro ao entrar na reunião" });
   } finally {
     await client.close();
   }
 });
 
-// PERMITIR PACIENTES
-app.get("/api/allowed-meetings", async (req, res) => {
-  if (!req.session.patientName) return res.status(401).json({ erro: "Não autorizado" });
-
+// LISTA REUNIÕES MÉDICO
+app.get("/api/myMeetings", async (req, res) => {
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Não autorizado" });
+  }
   const client = new MongoClient(url);
   try {
     await client.connect();
     const db = client.db(TWSMedTech);
-    const collectionReunioes = db.collection("reuniões");
-
-    const allowedMeetings = await collectionReunioes.find({
-      allowed: { $elemMatch: { type: "patient", name: req.session.patientName } }
-    }).toArray();
-
-    res.json({ sucesso: true, collectionReunioes: allowedMeetings });
+    const meetings = await db
+      .collection("reuniões")
+      .find({ doctorName: req.session.doctorName })
+      .sort({ createdAt: -1 })
+      .toArray();
+    res.json({ meetings });
   } catch (err) {
-    console.error("Erro ao buscar reuniões:", err);
-    res.status(500).json({ erro: "Erro ao buscar reuniões" });
+    console.error(err);
+    res.status(500).json({ erro: "Erro ao listar reuniões" });
   } finally {
     await client.close();
   }
@@ -292,7 +246,7 @@ app.put("/api/editDoctor", async (req, res) => {
       doctorName: novoNomeMedico,
     });
 
-    if(medicoExistente){
+    if (medicoExistente) {
       return res.status(400).json({ erro: "Nome já em uso." });
     }
 
@@ -415,7 +369,7 @@ app.put("/api/editPatient", async (req, res) => {
       patientName: novoNomePaciente,
     });
 
-    if(pacienteExistente){
+    if (pacienteExistente) {
       return res.status(400).json({ erro: "Nome já em uso." });
     }
 
@@ -437,7 +391,7 @@ app.put("/api/editPatient", async (req, res) => {
   } finally {
     await client.close();
   }
-  
+
 })
 
 app.listen(port, () => {
