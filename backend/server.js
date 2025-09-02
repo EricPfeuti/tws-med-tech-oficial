@@ -34,6 +34,101 @@ const TWSMedTech = "TWSMedTech";
 
 app.use(express.static(path.join(__dirname, "frontend/build")));
 
+function requireDoctor(req, res, next) {
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Apenas médicos podem acessar." });
+  }
+  next();
+}
+
+function requirePatient(req, res, next) {
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Apenas pacientes podem acessar." });
+  }
+  next();
+}
+
+// LISTAR PACIENTES
+app.get("/api/patients", requireDoctor, async (req, res) => {
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    const collectionPacientes = await banco.collection("pacientes").find({}).toArray();
+    res.json(collectionPacientes);
+  } catch (err) {
+    console.error("Erro ao buscar pacientes:", err);
+    res.status(500).json({ erro: "Erro ao buscar pacientes." });
+  } finally {
+    await client.close();
+  }
+});
+
+// PEGAR MENSAGENS ENTRE MÉDICO E PACIENTE
+app.get("/api/messages/:patientName", requireDoctor, async (req, res) => {
+  const { patientName } = req.params;
+  const doctorName = req.session.doctorName;
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+
+    const collectionMensagens = await banco
+      .collection("mensagens")
+      .find({ doctorName, patientName })
+      .sort({ timestamp: 1 })
+      .toArray();
+
+    res.json(collectionMensagens);
+  } catch (err) {
+    console.error("Erro ao buscar mensagens:", err);
+    res.status(500).json({ erro: "Erro ao buscar mensagens." });
+  } finally {
+    await client.close();
+  }
+});
+
+// ENVIAR MENSAGEM
+app.post("/api/messages/:patientName", async (req, res) => {
+  const { patientName } = req.params;
+  const { text } = req.body;
+
+  let sender = null;
+  let doctorName = null;
+
+  if (req.session.doctorName) {
+    sender = "medico";
+    doctorName = req.session.doctorName;
+  } else if (req.session.patientName) {
+    sender = "paciente";
+    doctorName = req.body.doctorName;
+  } else {
+    return res.status(401).json({ erro: "Não autenticado." });
+  }
+
+  const newMessage = {
+    doctorName,
+    patientName,
+    sender,
+    text,
+    timestamp: new Date(),
+  };
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    const result = await banco.collection("mensagens").insertOne(newMessage);
+    res.json(newMessage);
+  } catch (err) {
+    console.error("Erro ao salvar mensagem:", err);
+    res.status(500).json({ erro: "Erro ao salvar mensagem." });
+  } finally {
+    await client.close();
+  }
+});
+
 // CRIAR REUNIÃO
 app.post("/api/meetings/create", async (req, res) => {
   if (!req.session.doctorName) {
@@ -47,8 +142,8 @@ app.post("/api/meetings/create", async (req, res) => {
   const client = new MongoClient(url);
   try {
     await client.connect();
-    const db = client.db("TWSMedTech");
-    const collectionReunioes = db.collection("reunioes");
+    const banco = client.db(TWSMedTech);
+    const collectionReunioes = banco.collection("reunioes");
 
     const meeting = {
       doctorName: req.session.doctorName,

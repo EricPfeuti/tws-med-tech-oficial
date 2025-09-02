@@ -69,7 +69,7 @@ export default function FuncionalidadesDoctor() {
           <h2>Chat</h2>
           <p>Chat entre médico e paciente com histórico de mensagens.</p>
           <div id="btn-vermelho">
-            <a href="#">
+            <a href="/doctor/patients">
               <button>COMEÇAR</button>
             </a>
           </div>

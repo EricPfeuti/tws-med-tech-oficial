@@ -61,7 +61,7 @@ function App() {
               </PrivateDoctorRoute>
             }
           ></Route>
-          <Route 
+          <Route
             path="/doctor/meeting/:roomName"
             element={
               <PrivateDoctorRoute>
@@ -69,6 +69,22 @@ function App() {
               </PrivateDoctorRoute>
             }
           />
+          <Route
+            path="/doctor/patients"
+            element={
+              <PrivateDoctorRoute>
+                <DoctorPatients />
+              </PrivateDoctorRoute>
+            }
+          ></Route>
+          <Route
+            path="/doctor/chat/:patientName"
+            element={
+              <PrivateDoctorRoute>
+                <DoctorChat />
+              </PrivateDoctorRoute>
+            }
+          ></Route>
           <Route path="*" element={<Erro />} />
         </Routes>
       </UserProvider>
