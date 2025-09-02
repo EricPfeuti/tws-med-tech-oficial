@@ -18,6 +18,9 @@ import PrivateDoctorRoute from "./utils/PrivateRouteDoctor";
 import PrivatePatientRoute from "./utils/PrivateRoutePatient";
 import JitsiMeet from "./pages/Screens/Doctor/Video/JitsiMeet";
 
+import DoctorChat from "./pages/Screens/Doctor/Chat/DoctorChat";
+import DoctorPatients from "./pages/Screens/Doctor/Chat/DoctorPatients";
+
 function App() {
   return (
     <Router>

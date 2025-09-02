@@ -11,7 +11,7 @@ export default function DoctorChat() {
     useEffect(() => {
         const fetchMeesages = async () => {
             try{
-                const res = await api.fetch(`/messages/${patientName}`, { credentials: "include" });
+                const res = await api.get(`/messages/${patientName}`, { credentials: "include" });
 
                 const data = await res.json();
                 setMessages(data);
@@ -50,9 +50,15 @@ export default function DoctorChat() {
             <h1>Chat com {patientName}</h1>
             <div>
                 {messages.map((msg, idx) => (
-                    
+                    <div key={idx}>
+                        {msg.text}
+                    </div>
                 ))}
             </div>
+            <form onSubmit={sendMessage}>
+                <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="DIgite sua mensagem: " />
+                <button type="submit">ENVIAR</button>
+            </form>
         </div>
     )
 }

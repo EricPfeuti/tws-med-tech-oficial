@@ -10,11 +10,9 @@ export default function DoctorPatients() {
     useEffect(() => {
         const fetchPatients = async () => {
             try{
-                const res = await api.fetch("/patients", {
-                    credentials: "include",
-                });
-                const data = await res.json();
-                setPatients(data);
+                const res = await api.get("/patients");
+                console.log("Pacientes recebidos:", res.data);
+                setPatients(res.data);
             } catch (err) {
                 console.error("Erro ao buscar pacientes:", err)
             }
@@ -27,16 +25,20 @@ export default function DoctorPatients() {
         <div>
             <h1>Selecione um paciente</h1>
             <div>
-                {patients.map((p) => {
+                {patients.length === 0 ? (
+                <p>Nenhum paciente encontrado.</p>
+                ) : (
+                patients.map((p) => (
                     <div key={p._id}>
-                        <span>{p.patientName}</span>
-                        <div id="btn-vermelho">
-                            <a href="#">
-                                <button onClick={() => navigate(`/doctor/chat/${p.patientName}`)}>INICIAR CHAT</button>
-                            </a>
-                        </div>
+                    <span>{p.patientName}</span>
+                    <div id="btn-vermelho">
+                        <button onClick={() => navigate(`/doctor/chat/${p.patientName}`)}>
+                        INICIAR CHAT
+                        </button>
                     </div>
-                })}
+                    </div>
+                ))
+                )}
             </div>
         </div>
     )
