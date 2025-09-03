@@ -20,6 +20,8 @@ import JitsiMeet from "./pages/Screens/Doctor/Video/JitsiMeet";
 
 import DoctorChat from "./pages/Screens/Doctor/Chat/DoctorChat";
 import DoctorPatients from "./pages/Screens/Doctor/Chat/DoctorPatients";
+import PatientDoctors from "./pages/Screens/Patient/Chat/PatientDoctors";
+import PatientChat from "./pages/Screens/Patient/Chat/PatientChat";
 
 function App() {
   return (
@@ -81,6 +83,14 @@ function App() {
             }
           ></Route>
           <Route
+            path="/patient/doctors"
+            element={
+              <PrivatePatientRoute>
+                <PatientDoctors />
+              </PrivatePatientRoute>
+            }
+          ></Route>
+          <Route
             path="/doctor/chat/:patientName"
             element={
               <PrivateDoctorRoute>
@@ -92,7 +102,7 @@ function App() {
             path="/patient/chat/:doctorName"
             element={
               <PrivatePatientRoute>
-                <DoctorChat />
+                <PatientChat />
               </PrivatePatientRoute>
             }
           ></Route>

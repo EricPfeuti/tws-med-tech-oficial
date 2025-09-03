@@ -1,4 +1,4 @@
-section.escolha-paciente{
+section.escolha{
     min-height: 100vh;
     padding: 180px 8%;
     display: flex;
@@ -6,11 +6,11 @@ section.escolha-paciente{
     align-items: center;
 }
 
-section.escolha-paciente .cards-pacientes{
+section.escolha .cards-escolha{
     display: grid;
 }
 
-section.escolha-paciente .card-paciente{
+section.escolha .card-escolha{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,11 +21,11 @@ section.escolha-paciente .card-paciente{
     border-radius: 4px;
 }
 
-section.escolha-paciente .card-paciente h3{
+section.escolha-escolha .card-escolha h3{
     font-size: 20px;
 }
 
-section.escolha-paciente .card-paciente i{
+section.escolha .card-escolha i{
     font-size: 2rem;
     background: #ff0000;
     border-radius: 50%;
@@ -34,12 +34,12 @@ section.escolha-paciente .card-paciente i{
     color: #fff;
 }
 
-section.escolha-paciente .card-paciente:hover{
+section.escolha .card-escolha:hover{
     background: #ff0000;
     transition: .2s ease;
 }
 
-section.escolha-paciente .input-search{
+section.escolha .input-search{
     padding: 0.5rem;
     width: 50%;
     font-size: 14px;
