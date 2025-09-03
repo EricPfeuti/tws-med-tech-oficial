@@ -64,10 +64,36 @@ app.get("/api/patients", requireDoctor, async (req, res) => {
   }
 });
 
+// LISTAR MÉDICOS
+app.get("/api/doctors", requirePatient, async (req, res) => {
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    const collectionMedicos = await banco.collection("medicos").find({}).toArray();
+    res.json(collectionMedicos);
+  } catch (err) {
+    console.error("Erro ao buscar médicos:", err);
+    res.status(500).json({ erro: "Erro ao buscar médicos." });
+  } finally {
+    await client.close();
+  }
+});
+
 // PEGAR MENSAGENS ENTRE MÉDICO E PACIENTE
-app.get("/api/messages/:patientName", requireDoctor, async (req, res) => {
-  const { patientName } = req.params;
-  const doctorName = req.session.doctorName;
+app.get("/api/messages/:name", async (req, res) => {
+  const { name } = req.params;
+  let doctorName, patientName;
+
+  if (req.session.doctorName) {
+    doctorName =  req.session.doctorName;
+    patientName = name;
+  } else if (req.session.patientName) {
+    doctorName = name;
+    patientName = req.session.patientName;
+  } else {
+    return res.status(401).json({ erro: "Não autenticado." })
+  }
 
   const client = new MongoClient(url);
   try {
@@ -90,19 +116,20 @@ app.get("/api/messages/:patientName", requireDoctor, async (req, res) => {
 });
 
 // ENVIAR MENSAGEM
-app.post("/api/messages/:patientName", async (req, res) => {
-  const { patientName } = req.params;
+app.post("/api/messages/:naem", async (req, res) => {
+  const { name } = req.params;
   const { text } = req.body;
 
-  let sender = null;
-  let doctorName = null;
+  let sender, doctorName, patientName;
 
   if (req.session.doctorName) {
     sender = "medico";
     doctorName = req.session.doctorName;
+    patientName = name;
   } else if (req.session.patientName) {
     sender = "paciente";
-    doctorName = req.body.doctorName;
+    doctorName = name;
+    patientName = req.body.patientName;
   } else {
     return res.status(401).json({ erro: "Não autenticado." });
   }

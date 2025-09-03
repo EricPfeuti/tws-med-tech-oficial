@@ -88,6 +88,14 @@ function App() {
               </PrivateDoctorRoute>
             }
           ></Route>
+          <Route
+            path="/patient/chat/:doctorName"
+            element={
+              <PrivatePatientRoute>
+                <DoctorChat />
+              </PrivatePatientRoute>
+            }
+          ></Route>
           <Route path="*" element={<Erro />} />
         </Routes>
       </UserProvider>

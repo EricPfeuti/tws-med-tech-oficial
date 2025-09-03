@@ -22,7 +22,7 @@ export default function HeaderDoctor() {
         <div id="btn-perfil">
           <a href="/editDoctor">
             <button>
-              <i class="bi bi-person-fill"></i>
+              <i className="bi bi-person-fill"></i>
             </button>
           </a>
         </div>
@@ -49,7 +49,7 @@ export default function HeaderDoctor() {
             Área do médico
           </a>
           <a
-            href="/doctor"
+            href="/editDoctor"
             id="mobile-login"
             onClick={() => setMenuOpen(false)}
           >

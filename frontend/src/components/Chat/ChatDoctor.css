@@ -1,0 +1,46 @@
+section.escolha-paciente{
+    min-height: 100vh;
+    padding: 180px 8%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section.escolha-paciente .cards-pacientes{
+    display: grid;
+}
+
+section.escolha-paciente .card-paciente{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 4px;
+}
+
+section.escolha-paciente .card-paciente h3{
+    font-size: 20px;
+}
+
+section.escolha-paciente .card-paciente i{
+    font-size: 2rem;
+    background: #ff0000;
+    border-radius: 50%;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+section.escolha-paciente .card-paciente:hover{
+    background: #ff0000;
+    transition: .2s ease;
+}
+
+section.escolha-paciente .input-search{
+    padding: 0.5rem;
+    width: 50%;
+    font-size: 14px;
+}
