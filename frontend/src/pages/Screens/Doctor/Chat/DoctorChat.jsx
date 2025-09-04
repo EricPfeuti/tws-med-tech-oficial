@@ -7,14 +7,14 @@ export default function DoctorChat() {
     const { patientName } = useParams();
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState("");
+    const [doctorName, setDoctorName] = useState("");
 
     useEffect(() => {
         const fetchMeesages = async () => {
             try{
-                const res = await api.get(`/messages/${patientName}`, { credentials: "include" });
+                const res = await api.get(`/messages/${patientName}`, { withCredentials: true, });
 
-                const data = await res.json();
-                setMessages(data);
+                setMessages(res.data);
             } catch (err) {
                 console.error("Erro ao buscar mensagens:", err)
             }
@@ -27,23 +27,22 @@ export default function DoctorChat() {
         e.preventDefault();
         if (!text.trim()) return;
 
-        const newMsg = { text };
         try {
-            const res = await api.fetch(`/messages/${patientName}`, 
-                { 
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "include",
-                    body: JSON.stringify(newMsg)
-                }
+            const res = await api.post(`/messages/${patientName}`, 
+                { text }, 
+                { withCredentials: true }
             );
-            const data = await res.json();
-            setMessages((prev) => [...prev, data]);
+            setMessages((prev) => [...prev, res.data]);
             setText("");
         } catch (err) {
             console.error("Erro ao enviar mensagem:", err);
         }
     }
+
+    const getSenderName = (msg) => {
+        if (msg.sender === "medico") return msg.doctorName;
+        return msg.patientName;
+    };
 
     return (
         <div>
@@ -51,7 +50,7 @@ export default function DoctorChat() {
             <div>
                 {messages.map((msg, idx) => (
                     <div key={idx}>
-                        {msg.text}
+                        <strong>{getSenderName(msg)}:</strong> {msg.text}
                     </div>
                 ))}
             </div>

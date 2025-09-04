@@ -11,10 +11,9 @@ export default function PatientChat() {
     useEffect(() => {
         const fetchMeesages = async () => {
             try{
-                const res = await api.get(`/messages/${doctorName}`, { credentials: "include" });
+                const res = await api.get(`/messages/${doctorName}`, { withCredentials: true, });
 
-                const data = await res.json();
-                setMessages(data);
+                setMessages(res.data);
             } catch (err) {
                 console.error("Erro ao buscar mensagens:", err)
             }
@@ -27,18 +26,13 @@ export default function PatientChat() {
         e.preventDefault();
         if (!text.trim()) return;
 
-        const newMsg = { text };
         try {
-            const res = await api.fetch(`/messages/${doctorName}`, 
-                { 
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "include",
-                    body: JSON.stringify(newMsg)
-                }
+            const res = await api.post(`/messages/${doctorName}`, 
+                { text },
+                { withCredentials: true }
             );
-            const data = await res.json();
-            setMessages((prev) => [...prev, data]);
+
+            setMessages((prev) => [...prev, res.data]);
             setText("");
         } catch (err) {
             console.error("Erro ao enviar mensagem:", err);

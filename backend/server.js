@@ -116,7 +116,7 @@ app.get("/api/messages/:name", async (req, res) => {
 });
 
 // ENVIAR MENSAGEM
-app.post("/api/messages/:naem", async (req, res) => {
+app.post("/api/messages/:name", async (req, res) => {
   const { name } = req.params;
   const { text } = req.body;
 
