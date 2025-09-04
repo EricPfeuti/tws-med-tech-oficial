@@ -6,6 +6,8 @@ const methodOverride = require("method-override");
 const path = require("path");
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
 const port = 3001;
@@ -21,6 +23,14 @@ app.use(
     cookie: { secure: false },
   })
 );
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true
+  }
+});
 
 const corsOptions = {
   origin: ["http://localhost:5173"],
@@ -47,6 +57,44 @@ function requirePatient(req, res, next) {
   }
   next();
 }
+
+io.on("connection", (socket) => {
+  console.log("Usuário conectado:", socket.id);
+
+  socket.on("joinRoom", ({ doctorName, patientName }) => {
+    const room = `${doctorName}-${patientName}`;
+    socket.join(room);
+    console.log(`Usuário entrou na sala ${room}`);
+  });
+
+  socket.on("sendMessage", async ({ doctorName, patientName, sender, text }) => {
+    const newMessage = {
+      doctorName,
+      patientName,
+      sender,
+      text,
+      timestamp: new Date(),
+    };
+
+    try {
+      const client = new MongoClient(url);
+      await client.connect();
+      const banco = client.db("TWSMedTech");
+      await banco.collection("mensagens").insertOne(newMessage);
+      await client.close();
+
+      // Emite mensagem para todos na sala
+      const room = `${doctorName}-${patientName}`;
+      io.to(room).emit("receiveMessage", newMessage);
+    } catch (err) {
+      console.error("Erro ao salvar mensagem:", err);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Usuário desconectado:", socket.id);
+  });
+});
 
 // LISTAR PACIENTES
 app.get("/api/patients", requireDoctor, async (req, res) => {
@@ -129,7 +177,7 @@ app.post("/api/messages/:name", async (req, res) => {
   } else if (req.session.patientName) {
     sender = "paciente";
     doctorName = name;
-    patientName = req.body.patientName;
+    patientName = req.session.patientName;
   } else {
     return res.status(401).json({ erro: "Não autenticado." });
   }
