@@ -59,40 +59,16 @@ function requirePatient(req, res, next) {
 }
 
 io.on("connection", (socket) => {
-  console.log("Usuário conectado:", socket.id);
+  console.log("Novo usuário conectado:", socket.id);
 
-  socket.on("joinRoom", ({ doctorName, patientName }) => {
-    const room = `${doctorName}-${patientName}`;
-    socket.join(room);
-    console.log(`Usuário entrou na sala ${room}`);
-  });
-
-  socket.on("sendMessage", async ({ doctorName, patientName, sender, text }) => {
-    const newMessage = {
-      doctorName,
-      patientName,
-      sender,
-      text,
-      timestamp: new Date(),
-    };
-
-    try {
-      const client = new MongoClient(url);
-      await client.connect();
-      const banco = client.db("TWSMedTech");
-      await banco.collection("mensagens").insertOne(newMessage);
-      await client.close();
-
-      // Emite mensagem para todos na sala
-      const room = `${doctorName}-${patientName}`;
-      io.to(room).emit("receiveMessage", newMessage);
-    } catch (err) {
-      console.error("Erro ao salvar mensagem:", err);
-    }
+  socket.on("entrarNaSala", ({ doctorName, patientName }) => {
+    const sala = `${doctorName}-${patientName}`;
+    socket.join(sala);
+    console.log(`Usuário entrou na sala: ${sala}`);
   });
 
   socket.on("disconnect", () => {
-    console.log("Usuário desconectado:", socket.id);
+    console.log("Usuário saiu:", socket.id);
   });
 });
 
@@ -171,11 +147,11 @@ app.post("/api/messages/:name", async (req, res) => {
   let sender, doctorName, patientName;
 
   if (req.session.doctorName) {
-    sender = "medico";
+    sender = req.session.doctorName;
     doctorName = req.session.doctorName;
     patientName = name;
   } else if (req.session.patientName) {
-    sender = "paciente";
+    sender = req.session.patientName;
     doctorName = name;
     patientName = req.session.patientName;
   } else {
@@ -194,7 +170,8 @@ app.post("/api/messages/:name", async (req, res) => {
   try {
     await client.connect();
     const banco = client.db(TWSMedTech);
-    const result = await banco.collection("mensagens").insertOne(newMessage);
+    await banco.collection("mensagens").insertOne(newMessage);
+
     res.json(newMessage);
   } catch (err) {
     console.error("Erro ao salvar mensagem:", err);
