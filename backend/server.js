@@ -104,33 +104,26 @@ app.get("/api/doctors", requirePatient, async (req, res) => {
   }
 });
 
-// PEGAR MENSAGENS ENTRE MÉDICO E PACIENTE
-app.get("/api/messages/:name", async (req, res) => {
-  const { name } = req.params;
-  let doctorName, patientName;
-
-  if (req.session.doctorName) {
-    doctorName =  req.session.doctorName;
-    patientName = name;
-  } else if (req.session.patientName) {
-    doctorName = name;
-    patientName = req.session.patientName;
-  } else {
-    return res.status(401).json({ erro: "Não autenticado." })
+app.get("/api/messages/doctor/:patientName", async (req, res) => {
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Não autenticado como médico." });
   }
+
+  const { patientName } = req.params;
+  const doctorName = req.session.doctorName;
 
   const client = new MongoClient(url);
   try {
     await client.connect();
     const banco = client.db(TWSMedTech);
 
-    const collectionMensagens = await banco
+    const mensagens = await banco
       .collection("mensagens")
       .find({ doctorName, patientName })
       .sort({ timestamp: 1 })
       .toArray();
 
-    res.json(collectionMensagens);
+    res.json(mensagens);
   } catch (err) {
     console.error("Erro ao buscar mensagens:", err);
     res.status(500).json({ erro: "Erro ao buscar mensagens." });
@@ -139,24 +132,15 @@ app.get("/api/messages/:name", async (req, res) => {
   }
 });
 
-// ENVIAR MENSAGEM
-app.post("/api/messages/:name", async (req, res) => {
-  const { name } = req.params;
-  const { text } = req.body;
-
-  let sender, doctorName, patientName;
-
-  if (req.session.doctorName) {
-    sender = req.session.doctorName;
-    doctorName = req.session.doctorName;
-    patientName = name;
-  } else if (req.session.patientName) {
-    sender = req.session.patientName;
-    doctorName = name;
-    patientName = req.session.patientName;
-  } else {
-    return res.status(401).json({ erro: "Não autenticado." });
+app.post("/api/messages/doctor/:patientName", async (req, res) => {
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Não autenticado como médico." });
   }
+
+  const { patientName } = req.params;
+  const { text } = req.body;
+  const doctorName = req.session.doctorName;
+  const sender = doctorName;
 
   const newMessage = {
     doctorName,
@@ -171,6 +155,73 @@ app.post("/api/messages/:name", async (req, res) => {
     await client.connect();
     const banco = client.db(TWSMedTech);
     await banco.collection("mensagens").insertOne(newMessage);
+
+    io.to(`${doctorName}-${patientName}`).emit("novaMensagem", newMessage);
+
+    res.json(newMessage);
+  } catch (err) {
+    console.error("Erro ao salvar mensagem:", err);
+    res.status(500).json({ erro: "Erro ao salvar mensagem." });
+  } finally {
+    await client.close();
+  }
+});
+
+
+// MENSAGENS PACIENTE (com médico específico)
+app.get("/api/messages/patient/:doctorName", async (req, res) => {
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Não autenticado como paciente." });
+  }
+
+  const { doctorName } = req.params;
+  const patientName = req.session.patientName;
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+
+    const mensagens = await banco
+      .collection("mensagens")
+      .find({ doctorName, patientName })
+      .sort({ timestamp: 1 })
+      .toArray();
+
+    res.json(mensagens);
+  } catch (err) {
+    console.error("Erro ao buscar mensagens:", err);
+    res.status(500).json({ erro: "Erro ao buscar mensagens." });
+  } finally {
+    await client.close();
+  }
+});
+
+app.post("/api/messages/patient/:doctorName", async (req, res) => {
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Não autenticado como paciente." });
+  }
+
+  const { doctorName } = req.params;
+  const { text } = req.body;
+  const patientName = req.session.patientName;
+  const sender = patientName;
+
+  const newMessage = {
+    doctorName,
+    patientName,
+    sender,
+    text,
+    timestamp: new Date(),
+  };
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    await banco.collection("mensagens").insertOne(newMessage);
+
+    io.to(`${doctorName}-${patientName}`).emit("novaMensagem", newMessage);
 
     res.json(newMessage);
   } catch (err) {

@@ -14,7 +14,7 @@ export default function DoctorChat() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await api.get(`/messages/${patientName}`);
+        const res = await api.get(`/messages/doctor/${patientName}`);
         setMessages(res.data);
       } catch (err) {
         console.error("Erro ao buscar mensagens:", err);
@@ -23,13 +23,13 @@ export default function DoctorChat() {
 
     fetchMessages();
 
-    socket.emit("joinRoom", { doctorName: "doutor-logado", patientName }); 
-    socket.on("newMessage", (msg) => {
+    socket.emit("joinRoom", { doctorName: "doctor-session", patientName }); 
+    socket.on("novaMensagem", (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
 
     return () => {
-      socket.off("newMessage");
+      socket.off("novaMensagem");
     };
   }, [patientName]);
 
@@ -38,11 +38,8 @@ export default function DoctorChat() {
     if (!text.trim()) return;
 
     try {
-      const res = await api.post(`/messages/${patientName}`, { text });
-      const savedMsg = res.data;
-
-      socket.emit("sendMessage", savedMsg);
-      setMessages((prev) => [...prev, savedMsg]);
+      const res = await api.post(`/messages/doctor/${patientName}`, { text });
+      setMessages((prev) => [...prev, res.data]);
       setText("");
     } catch (err) {
       console.error("Erro ao enviar mensagem:", err);
