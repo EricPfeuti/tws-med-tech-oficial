@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
+import { toast } from "react-toastify";
 import api from "../../api/api";
 import "./Chat.css";
 
@@ -11,6 +12,7 @@ export default function PatientChat() {
   const { doctorName } = useParams();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const [patientName, setPatientName] = useState("");
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -28,6 +30,7 @@ export default function PatientChat() {
       try {
         const s = await api.get("/checkPatientSession", { withCredentials: true });
         if (s.data.logado) {
+          setPatientName(s.data.patientName);
           socket.emit("joinRoom", { doctorName, patientName: s.data.patientName });
         }
       } catch (e) {
@@ -37,14 +40,23 @@ export default function PatientChat() {
     sessionGet();
 
     socket.on("newMessage", (msg) => {
-      console.log("Nova mensagem recebida:", msg);
       setMessages(prev => [...prev, msg]);
+      toast.info(`Nova mensagem de ${msg.sender}`, {
+        position: "top-right"
+      });
+    });
+
+    socket.on("notifyMessage", ({ sender, text }) => {
+      if (sender !== patientName) {
+        toast.success(`Nova mensagem de ${sender}: ${text}`);
+      }
     });
 
     return () => {
       socket.off("newMessage");
+      socket.off("notifyMessage");
     };
-  }, [doctorName]);
+  }, [doctorName, patientName]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -60,10 +72,13 @@ export default function PatientChat() {
 
   return (
     <section className="chat-container">
-      <h2>Chat com Dr(a). {doctorName}</h2>
+      <h2>Chat com {doctorName}</h2>
       <div className="messages">
         {messages.map((msg, idx) => (
-          <div key={idx}>
+          <div
+            key={idx}
+            className={msg.sender === patientName ? "message patient" : "message doctor"}
+          >
             <strong>{msg.sender}: </strong>
             <span>{msg.text}</span>
           </div>

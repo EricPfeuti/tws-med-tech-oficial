@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { UserProvider } from "./context/userContext";
+import { ToastContainer } from "react-toastify";
+import { NotificationProvider } from "./context/notificationContext";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 import Index from "./pages/index";
@@ -22,92 +24,107 @@ import DoctorPatients from "./pages/Screens/Doctor/Chat/DoctorPatients";
 import PatientDoctors from "./pages/Screens/Patient/Chat/PatientDoctors";
 import ChatPatient from "./pages/Screens/Patient/Chat/ChatPatient";
 import ChatDoctor from "./pages/Screens/Doctor/Chat/ChatDoctor";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <Router>
       <UserProvider>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/signDoctor" element={<SignDoctor />} />
-          <Route path="/loginDoctor" element={<LoginDoctor />} />
-          <Route path="/signPatient" element={<SignPatient />} />
-          <Route path="/loginPatient" element={<LoginPatient />} />
-          <Route
-            path="/doctor"
-            element={
-              <PrivateDoctorRoute>
-                <Doctor />
-              </PrivateDoctorRoute>
-            }
+        <NotificationProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/signDoctor" element={<SignDoctor />} />
+            <Route path="/loginDoctor" element={<LoginDoctor />} />
+            <Route path="/signPatient" element={<SignPatient />} />
+            <Route path="/loginPatient" element={<LoginPatient />} />
+            <Route
+              path="/doctor"
+              element={
+                <PrivateDoctorRoute>
+                  <Doctor />
+                </PrivateDoctorRoute>
+              }
+            />
+            <Route
+              path="/patient"
+              element={
+                <PrivatePatientRoute>
+                  <Patient />
+                </PrivatePatientRoute>
+              }
+            />
+            <Route
+              path="/editPatient"
+              element={
+                <PrivatePatientRoute>
+                  <EditPatientPage />
+                </PrivatePatientRoute>
+              }
+            ></Route>
+            <Route
+              path="/editDoctor"
+              element={
+                <PrivateDoctorRoute>
+                  <EditDoctorPage />
+                </PrivateDoctorRoute>
+              }
+            ></Route>
+            <Route
+              path="/doctor/meeting/:roomName"
+              element={
+                <PrivateDoctorRoute>
+                  <JitsiMeet />
+                </PrivateDoctorRoute>
+              }
+            />
+            <Route
+              path="/doctor/patients"
+              element={
+                <PrivateDoctorRoute>
+                  <DoctorPatients />
+                </PrivateDoctorRoute>
+              }
+            ></Route>
+            <Route
+              path="/patient/doctors"
+              element={
+                <PrivatePatientRoute>
+                  <PatientDoctors />
+                </PrivatePatientRoute>
+              }
+            ></Route>
+            <Route
+              path="/doctor/chat/:patientName"
+              element={
+                <PrivateDoctorRoute>
+                  <ChatDoctor />
+                </PrivateDoctorRoute>
+              }
+            ></Route>
+            <Route
+              path="/patient/chat/:doctorName"
+              element={
+                <PrivatePatientRoute>
+                  <ChatPatient />
+                </PrivatePatientRoute>
+              }
+            ></Route>
+            <Route path="*" element={<Erro />} />
+          </Routes>
+          <ToastContainer
+            position="top-right"
+            autoClose={4000}
+            hideProgressBar={false}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
           />
-          <Route
-            path="/patient"
-            element={
-              <PrivatePatientRoute>
-                <Patient />
-              </PrivatePatientRoute>
-            }
-          />
-          <Route
-            path="/editPatient"
-            element={
-              <PrivatePatientRoute>
-                <EditPatientPage />
-              </PrivatePatientRoute>
-            }
-          ></Route>
-          <Route
-            path="/editDoctor"
-            element={
-              <PrivateDoctorRoute>
-                <EditDoctorPage />
-              </PrivateDoctorRoute>
-            }
-          ></Route>
-          <Route
-            path="/doctor/meeting/:roomName"
-            element={
-              <PrivateDoctorRoute>
-                <JitsiMeet />
-              </PrivateDoctorRoute>
-            }
-          />
-          <Route
-            path="/doctor/patients"
-            element={
-              <PrivateDoctorRoute>
-                <DoctorPatients />
-              </PrivateDoctorRoute>
-            }
-          ></Route>
-          <Route
-            path="/patient/doctors"
-            element={
-              <PrivatePatientRoute>
-                <PatientDoctors />
-              </PrivatePatientRoute>
-            }
-          ></Route>
-          <Route
-            path="/doctor/chat/:patientName"
-            element={
-              <PrivateDoctorRoute>
-                <ChatDoctor />
-              </PrivateDoctorRoute>
-            }
-          ></Route>
-          <Route
-            path="/patient/chat/:doctorName"
-            element={
-              <PrivatePatientRoute>
-                <ChatPatient />
-              </PrivatePatientRoute>
-            }
-          ></Route>
-          <Route path="*" element={<Erro />} />
-        </Routes>
+        </ NotificationProvider>
       </UserProvider>
     </Router>
   );

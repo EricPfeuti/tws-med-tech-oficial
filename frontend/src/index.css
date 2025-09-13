@@ -82,7 +82,7 @@ html {
   color: #fff;
 }
 
-.consulta{
+.consulta {
   padding: 180px 8%;
   width: 100%;
   height: 100vh;
@@ -117,7 +117,7 @@ html {
   padding: 18px;
 }
 
-.form a{
+.form a {
   color: #007fff;
   text-decoration: underline;
 }
@@ -168,6 +168,54 @@ html {
 .form-content.error a {
   color: #ff3b25;
   visibility: visible;
+}
+
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notification {
+  background: linear-gradient(135deg, #4cafef, #2196f3);
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateX(100%);
+  animation: slideIn 0.5s forwards, fadeOut 0.5s 4.5s forwards;
+}
+
+.notification::before {
+  content: "💬 ";
+  font-size: 18px;
+  margin-right: 6px;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
 
 @media screen and (max-width: 1080px) {

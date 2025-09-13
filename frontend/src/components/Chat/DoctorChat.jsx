@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import api from "../../api/api";
+import { toast } from "react-toastify";
 import "./Chat.css"
 
 const socket = io("http://localhost:3001", { withCredentials: true });
@@ -11,6 +12,7 @@ export default function DoctorChat() {
   const { patientName } = useParams();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const [doctorName, setDoctorName] = useState("");
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -28,6 +30,7 @@ export default function DoctorChat() {
       try {
         const s = await api.get("/checkDoctorSession", { withCredentials: true });
         if (s.data.logado) {
+          setDoctorName(s.data.doctorName);
           socket.emit("joinRoom", { doctorName: s.data.doctorName, patientName });
         }
       } catch (e) {
@@ -37,14 +40,23 @@ export default function DoctorChat() {
     sessionGet();
 
     socket.on("newMessage", (msg) => {
-      console.log("Nova mensagem recebida:", msg);
       setMessages(prev => [...prev, msg]);
+      toast.info(`Nova mensagem de ${msg.sender}`, {
+        position: "top-right"
+      });
+    });
+
+    socket.on("notifyMessage", ({ sender, text }) => {
+      if (sender !== doctorName) {
+        toast.info(`Nova mensagem de ${sender}: ${text}`);
+      }
     });
 
     return () => {
       socket.off("newMessage");
+      socket.off("notifyMessage");
     };
-  }, [patientName]);
+  }, [patientName, doctorName]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -63,7 +75,10 @@ export default function DoctorChat() {
       <h2>Chat com {patientName}</h2>
       <div className="messages">
         {messages.map((msg, idx) => (
-          <div key={idx}>
+          <div
+            key={idx}
+            className={msg.sender === doctorName ? "message doctor" : "message patient"}
+          >
             <strong>{msg.sender}: </strong>
             <span>{msg.text}</span>
           </div>

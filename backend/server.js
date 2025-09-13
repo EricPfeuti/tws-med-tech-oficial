@@ -52,6 +52,22 @@ io.on("connection", (socket) => {
     const room = `${doctorName}-${patientName}`;
     socket.join(room);
   });
+
+  socket.on("joinDoctor", ({ doctorName }) => {
+    const doctorRoom = `doctor-${doctorName}`;
+    socket.join(doctorRoom);
+    console.log(`Socket ${socket.id} entrou na sala global do médico: ${doctorRoom}`);
+  });
+
+  socket.on("joinPatient", ({ patientName }) => {
+    const patientRoom = `patient-${patientName}`;
+    socket.join(patientRoom);
+    console.log(`Socket ${socket.id} entrou na sala global do paciente: ${patientRoom}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Socket desconectado: ${socket.id}`);
+  });
 });
 
 function requireDoctor(req, res, next) {
@@ -152,7 +168,12 @@ app.post("/api/messages/doctor/:patientName", async (req, res) => {
     const banco = client.db(TWSMedTech);
     await banco.collection("mensagens").insertOne(newMessage);
 
-    io.to(`${doctorName}-${patientName}`).emit("newMessage", newMessage);
+    const roomId = `${doctorName}-${patientName}`;
+    io.to(roomId).emit("newMessage", newMessage);
+    io.to(roomId).emit("notifyMessage", {
+      sender,
+      text,
+    });
 
     res.json(newMessage);
   } catch (err) {
@@ -217,7 +238,12 @@ app.post("/api/messages/patient/:doctorName", async (req, res) => {
     const banco = client.db(TWSMedTech);
     await banco.collection("mensagens").insertOne(newMessage);
 
-    io.to(`${doctorName}-${patientName}`).emit("newMessage", newMessage);
+    const roomId = `${doctorName}-${patientName}`;
+    io.to(roomId).emit("newMessage", newMessage);
+    io.to(roomId).emit("notifyMessage", {
+      sender,
+      text,
+    });
 
     res.json(newMessage);
   } catch (err) {
