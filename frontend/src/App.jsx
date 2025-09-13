@@ -18,10 +18,10 @@ import PrivateDoctorRoute from "./utils/PrivateRouteDoctor";
 import PrivatePatientRoute from "./utils/PrivateRoutePatient";
 import JitsiMeet from "./pages/Screens/Doctor/Video/JitsiMeet";
 
-import DoctorChat from "./pages/Screens/Doctor/Chat/DoctorChat";
 import DoctorPatients from "./pages/Screens/Doctor/Chat/DoctorPatients";
 import PatientDoctors from "./pages/Screens/Patient/Chat/PatientDoctors";
-import PatientChat from "./pages/Screens/Patient/Chat/PatientChat";
+import ChatPatient from "./pages/Screens/Patient/Chat/ChatPatient";
+import ChatDoctor from "./pages/Screens/Doctor/Chat/ChatDoctor";
 
 function App() {
   return (
@@ -94,7 +94,7 @@ function App() {
             path="/doctor/chat/:patientName"
             element={
               <PrivateDoctorRoute>
-                <DoctorChat />
+                <ChatDoctor />
               </PrivateDoctorRoute>
             }
           ></Route>
@@ -102,7 +102,7 @@ function App() {
             path="/patient/chat/:doctorName"
             element={
               <PrivatePatientRoute>
-                <PatientChat />
+                <ChatPatient />
               </PrivatePatientRoute>
             }
           ></Route>

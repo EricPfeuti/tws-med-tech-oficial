@@ -2,19 +2,20 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
-import api from "../../../../api/api";
+import api from "../../api/api";
+import "./Chat.css";
 
-const socket = io("https://localhost:3001", { withCredentials: true });
+const socket = io("http://localhost:3001", { withCredentials: true });
 
-export default function DoctorChat() {
-  const { patientName } = useParams();
+export default function PatientChat() {
+  const { doctorName } = useParams();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await api.get(`/messages/doctor/${patientName}`);
+        const res = await api.get(`/messages/patient/${doctorName}`);
         setMessages(res.data);
       } catch (err) {
         console.error("Erro ao buscar mensagens:", err);
@@ -23,23 +24,34 @@ export default function DoctorChat() {
 
     fetchMessages();
 
-    socket.emit("joinRoom", { doctorName: "doctor-session", patientName }); 
-    socket.on("novaMensagem", (msg) => {
-      setMessages((prev) => [...prev, msg]);
+    const sessionGet = async () => {
+      try {
+        const s = await api.get("/checkPatientSession", { withCredentials: true });
+        if (s.data.logado) {
+          socket.emit("joinRoom", { doctorName, patientName: s.data.patientName });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    sessionGet();
+
+    socket.on("newMessage", (msg) => {
+      console.log("Nova mensagem recebida:", msg);
+      setMessages(prev => [...prev, msg]);
     });
 
     return () => {
-      socket.off("novaMensagem");
+      socket.off("newMessage");
     };
-  }, [patientName]);
+  }, [doctorName]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
 
     try {
-      const res = await api.post(`/messages/doctor/${patientName}`, { text });
-      setMessages((prev) => [...prev, res.data]);
+      await api.post(`/messages/patient/${doctorName}`, { text }, { withCredentials: true });
       setText("");
     } catch (err) {
       console.error("Erro ao enviar mensagem:", err);
@@ -47,8 +59,8 @@ export default function DoctorChat() {
   };
 
   return (
-    <div className="chat-container">
-      <h2>Chat com {patientName}</h2>
+    <section className="chat-container">
+      <h2>Chat com Dr(a). {doctorName}</h2>
       <div className="messages">
         {messages.map((msg, idx) => (
           <div key={idx}>
@@ -66,6 +78,7 @@ export default function DoctorChat() {
         />
         <button type="submit">Enviar</button>
       </form>
-    </div>
+    </section>
+
   );
 }

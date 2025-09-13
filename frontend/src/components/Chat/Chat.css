@@ -44,3 +44,8 @@ section.escolha .input-search{
     width: 50%;
     font-size: 14px;
 }
+
+section.chat-container{
+    min-height: 100vh;
+    padding: 180px 8%;
+}

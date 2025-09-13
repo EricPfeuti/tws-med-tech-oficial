@@ -11,6 +11,15 @@ const { Server } = require("socket.io");
 
 const app = express();
 const port = 3001;
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true
+  }
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
@@ -24,14 +33,6 @@ app.use(
   })
 );
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-    credentials: true
-  }
-});
-
 const corsOptions = {
   origin: ["http://localhost:5173"],
   credentials: true,
@@ -43,6 +44,15 @@ const url = "mongodb://127.0.0.1:27017/";
 const TWSMedTech = "TWSMedTech";
 
 app.use(express.static(path.join(__dirname, "frontend/build")));
+
+io.on("connection", (socket) => {
+  console.log("Novo socket conectado:", socket.id);
+
+  socket.on("joinRoom", ({ doctorName, patientName }) => {
+    const room = `${doctorName}-${patientName}`;
+    socket.join(room);
+  });
+});
 
 function requireDoctor(req, res, next) {
   if (!req.session.doctorName) {
@@ -57,20 +67,6 @@ function requirePatient(req, res, next) {
   }
   next();
 }
-
-io.on("connection", (socket) => {
-  console.log("Novo usuário conectado:", socket.id);
-
-  socket.on("entrarNaSala", ({ doctorName, patientName }) => {
-    const sala = `${doctorName}-${patientName}`;
-    socket.join(sala);
-    console.log(`Usuário entrou na sala: ${sala}`);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Usuário saiu:", socket.id);
-  });
-});
 
 // LISTAR PACIENTES
 app.get("/api/patients", requireDoctor, async (req, res) => {
@@ -156,7 +152,7 @@ app.post("/api/messages/doctor/:patientName", async (req, res) => {
     const banco = client.db(TWSMedTech);
     await banco.collection("mensagens").insertOne(newMessage);
 
-    io.to(`${doctorName}-${patientName}`).emit("novaMensagem", newMessage);
+    io.to(`${doctorName}-${patientName}`).emit("newMessage", newMessage);
 
     res.json(newMessage);
   } catch (err) {
@@ -221,7 +217,7 @@ app.post("/api/messages/patient/:doctorName", async (req, res) => {
     const banco = client.db(TWSMedTech);
     await banco.collection("mensagens").insertOne(newMessage);
 
-    io.to(`${doctorName}-${patientName}`).emit("novaMensagem", newMessage);
+    io.to(`${doctorName}-${patientName}`).emit("newMessage", newMessage);
 
     res.json(newMessage);
   } catch (err) {
@@ -510,6 +506,6 @@ app.put("/api/editPatient", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Servidor rodando em: http://localhost:${port}`);
 });
