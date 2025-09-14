@@ -124,7 +124,7 @@ function App() {
             pauseOnHover
             theme="colored"
           />
-        </ NotificationProvider>
+        </NotificationProvider>
       </UserProvider>
     </Router>
   );

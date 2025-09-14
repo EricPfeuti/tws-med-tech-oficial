@@ -29,8 +29,13 @@ export function NotificationProvider({ children }) {
     joinRooms();
 
     socket.on("newMessage", (msg) => {
-      toast.info(`Nova mensagem de ${msg.sender}: ${msg.text}`, {
+      toast.info(`💬 Nova mensagem de ${msg.sender}: ${msg.text}`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
       });
     });
 

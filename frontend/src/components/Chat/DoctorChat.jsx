@@ -1,20 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { io } from "socket.io-client";
 import api from "../../api/api";
-import { toast } from "react-toastify";
-import "./Chat.css"
-
-const socket = io("http://localhost:3001", { withCredentials: true });
+import "./Chat.css";
+import { NotificationContext } from "../../context/notificationContext";
 
 export default function DoctorChat() {
   const { patientName } = useParams();
+  const { socket } = useContext(NotificationContext);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [doctorName, setDoctorName] = useState("");
 
   useEffect(() => {
+    
     const fetchMessages = async () => {
       try {
         const res = await api.get(`/messages/doctor/${patientName}`);
@@ -41,22 +40,12 @@ export default function DoctorChat() {
 
     socket.on("newMessage", (msg) => {
       setMessages(prev => [...prev, msg]);
-      toast.info(`Nova mensagem de ${msg.sender}`, {
-        position: "top-right"
-      });
-    });
-
-    socket.on("notifyMessage", ({ sender, text }) => {
-      if (sender !== doctorName) {
-        toast.info(`Nova mensagem de ${sender}: ${text}`);
-      }
     });
 
     return () => {
       socket.off("newMessage");
-      socket.off("notifyMessage");
     };
-  }, [patientName, doctorName]);
+  }, [patientName, socket]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -72,7 +61,7 @@ export default function DoctorChat() {
 
   return (
     <section className="chat-container">
-      <h2>Chat com {patientName}</h2>
+      <h2>Chat com Paciente {patientName}</h2>
       <div className="messages">
         {messages.map((msg, idx) => (
           <div
@@ -85,13 +74,17 @@ export default function DoctorChat() {
         ))}
       </div>
       <form onSubmit={sendMessage} className="chat-form">
-        <input
-          type="text"
-          placeholder="Digite sua mensagem"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        <button type="submit">Enviar</button>
+        <div className="inputs">
+          <input
+            type="text"
+            placeholder="Digite sua mensagem"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <button id="clip"><i class="bi bi-paperclip"></i></button>
+          <button type="submit" id="send"><i class="bi bi-send-fill"></i></button>
+        </div>
+        
       </form>
     </section>
   );

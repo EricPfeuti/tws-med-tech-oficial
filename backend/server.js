@@ -169,10 +169,23 @@ app.post("/api/messages/doctor/:patientName", async (req, res) => {
     await banco.collection("mensagens").insertOne(newMessage);
 
     const roomId = `${doctorName}-${patientName}`;
+    const doctorRoom = `doctor-${doctorName}`;
+    const patientRoom = `patient-${patientName}`;
+
     io.to(roomId).emit("newMessage", newMessage);
-    io.to(roomId).emit("notifyMessage", {
+
+    io.to(doctorRoom).emit("notifyMessage", {
       sender,
       text,
+      patientName,
+      doctorName,
+    });
+
+    io.to(patientRoom).emit("notifyMessage", {
+      sender,
+      text,
+      patientName,
+      doctorName,
     });
 
     res.json(newMessage);
@@ -239,10 +252,23 @@ app.post("/api/messages/patient/:doctorName", async (req, res) => {
     await banco.collection("mensagens").insertOne(newMessage);
 
     const roomId = `${doctorName}-${patientName}`;
+    const doctorRoom = `doctor-${doctorName}`;
+    const patientRoom = `patient-${patientName}`;
+
     io.to(roomId).emit("newMessage", newMessage);
-    io.to(roomId).emit("notifyMessage", {
+
+    io.to(doctorRoom).emit("notifyMessage", {
       sender,
       text,
+      patientName,
+      doctorName,
+    });
+
+    io.to(patientRoom).emit("notifyMessage", {
+      sender,
+      text,
+      patientName,
+      doctorName,
     });
 
     res.json(newMessage);
