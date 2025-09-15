@@ -116,6 +116,7 @@ app.get("/api/doctors", requirePatient, async (req, res) => {
   }
 });
 
+// MENSAGENS MÉDICO (com paciente específico)
 app.get("/api/messages/doctor/:patientName", async (req, res) => {
   if (!req.session.doctorName) {
     return res.status(401).json({ erro: "Não autenticado como médico." });
@@ -196,7 +197,6 @@ app.post("/api/messages/doctor/:patientName", async (req, res) => {
     await client.close();
   }
 });
-
 
 // MENSAGENS PACIENTE (com médico específico)
 app.get("/api/messages/patient/:doctorName", async (req, res) => {
@@ -433,8 +433,6 @@ app.put("/api/editDoctor", async (req, res) => {
     await client.close();
   }
 });
-
-// <---------------------------------------------->
 
 // CADASTRO PACIENTE
 app.post("/api/signPatient", async (req, res) => {

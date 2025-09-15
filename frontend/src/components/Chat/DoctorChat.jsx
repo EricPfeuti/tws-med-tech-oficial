@@ -63,15 +63,20 @@ export default function DoctorChat() {
     <section className="chat-container">
       <h2>Chat com Paciente {patientName}</h2>
       <div className="messages">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={msg.sender === doctorName ? "message doctor" : "message patient"}
-          >
-            <strong>{msg.sender}: </strong>
-            <span>{msg.text}</span>
-          </div>
-        ))}
+        {messages.map((msg, idx) => {
+          const isOwnMessage = msg.sender === doctorName;
+          return (
+            <div
+              key={idx}
+              className={`message ${isOwnMessage ? "enviada" : "recebida"}`}
+            >
+              <div className="bubble">
+                <strong>{msg.sender}: </strong>
+                <span>{msg.text}</span>
+              </div>
+            </div>
+          )
+        })}
       </div>
       <form onSubmit={sendMessage} className="chat-form">
         <div className="inputs">
@@ -84,7 +89,6 @@ export default function DoctorChat() {
           <button id="clip"><i class="bi bi-paperclip"></i></button>
           <button type="submit" id="send"><i class="bi bi-send-fill"></i></button>
         </div>
-        
       </form>
     </section>
   );

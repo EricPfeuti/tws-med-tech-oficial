@@ -2,12 +2,15 @@ import React, { createContext, useEffect } from "react";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import api from "../api/api";
+import { useLocation } from "react-router-dom";
 
 export const NotificationContext = createContext(null);
 
 const socket = io("http://localhost:3001", { withCredentials: true });
 
 export function NotificationProvider({ children }) {
+  const location = useLocation();
+
   useEffect(() => {
     const joinRooms = async () => {
       try {
@@ -29,20 +32,27 @@ export function NotificationProvider({ children }) {
     joinRooms();
 
     socket.on("newMessage", (msg) => {
-      toast.info(`💬 Nova mensagem de ${msg.sender}: ${msg.text}`, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
+      toast(`💬 Nova mensagem de ${msg.sender}`);
+    });
+
+    socket.on("notifyMessage", ({ sender }) => {
+      const isChatOpen = 
+        location.pathname.startsWith("/doctor/chat") || location.pathname.startsWith("/patient/chat");
+      
+        if(!isChatOpen) {
+          toast(`💬 Nova mensagem de ${sender}`, {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+      }
     });
 
     return () => {
+      socket.off("notifyMessage");
       socket.off("newMessage");
     };
-  }, []);
+  }, [location]);
 
   return (
     <NotificationContext.Provider value={{ socket }}>

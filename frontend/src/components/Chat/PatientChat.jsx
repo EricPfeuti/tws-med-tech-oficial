@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import { useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../api/api";
 import "./Chat.css";
@@ -63,15 +62,20 @@ export default function PatientChat() {
     <section className="chat-container">
       <h2>Chat com Dr.(a) {doctorName}</h2>
       <div className="messages">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={msg.sender === patientName ? "message patient" : "message doctor"}
-          >
-            <strong>{msg.sender}: </strong>
-            <span>{msg.text}</span>
-          </div>
-        ))}
+        {messages.map((msg, idx) => {
+          const isOwnMessage = msg.sender === patientName;
+          return (
+            <div
+              key={idx}
+              className={`message ${isOwnMessage ? "enviada" : "recebida"}`}
+            >
+              <div className="bubble">
+                <strong>{msg.sender}: </strong>
+                <span>{msg.text}</span>
+              </div>
+            </div>
+          )
+        })}
       </div>
       <form onSubmit={sendMessage} className="chat-form">
         <div className="inputs">
