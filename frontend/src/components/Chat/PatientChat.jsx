@@ -10,6 +10,7 @@ export default function PatientChat() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [patientName, setPatientName] = useState("");
+  const [file, setFile] = useState("");
 
   useEffect(() => {
     
@@ -51,8 +52,17 @@ export default function PatientChat() {
     if (!text.trim()) return;
 
     try {
-      await api.post(`/messages/patient/${doctorName}`, { text }, { withCredentials: true });
+      const formData = new FormData();
+      if (text) formData.append("text", text);
+      if(file) formData.append("file", file);
+
+      await api.post(`/messages/patient/${doctorName}`, formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      }); 
+
       setText("");
+      setFile("");
     } catch (err) {
       console.error("Erro ao enviar mensagem:", err);
     }
@@ -71,7 +81,12 @@ export default function PatientChat() {
             >
               <div className="bubble">
                 <strong>{msg.sender}: </strong>
-                <span>{msg.text}</span>
+                {msg.text && <span>{msg.text}</span>}
+                {msg.fileUrl && (
+                  <a href={`http://localhost:3001${msg.fileUrl}`} target="_blank" rel="noreferrer">
+                    📎 {msg.fileUrl.split("/").pop()}
+                  </a>
+                )}
               </div>
             </div>
           )
@@ -85,7 +100,19 @@ export default function PatientChat() {
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <button id="clip"><i class="bi bi-paperclip"></i></button>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            style={{ display: "none" }}
+            id="fileInput"
+            accept=".pdf,.jpg,.png,.docx"
+          />
+          <label htmlFor="fileInput" id="clip">
+            <i className="bi bi-paperclip"></i>
+          </label>
+          {file && (
+            <span className="file-name">📄 {file.name}</span>
+          )}
           <button type="submit" id="send"><i class="bi bi-send-fill"></i></button>
         </div>
       </form>

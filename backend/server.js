@@ -8,6 +8,7 @@ const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const { Server } = require("socket.io");
+const multer = require("multer");
 
 const app = express();
 const port = 3001;
@@ -39,6 +40,19 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, uuidv4() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
 
 const url = "mongodb://127.0.0.1:27017/";
 const TWSMedTech = "TWSMedTech";
@@ -145,7 +159,7 @@ app.get("/api/messages/doctor/:patientName", async (req, res) => {
   }
 });
 
-app.post("/api/messages/doctor/:patientName", async (req, res) => {
+app.post("/api/messages/doctor/:patientName", upload.single("file"), async (req, res) => {
   if (!req.session.doctorName) {
     return res.status(401).json({ erro: "Não autenticado como médico." });
   }
@@ -155,11 +169,20 @@ app.post("/api/messages/doctor/:patientName", async (req, res) => {
   const doctorName = req.session.doctorName;
   const sender = doctorName;
 
+  let fileUrl = null;
+  let originalname = null;
+  if (req.file) {
+    fileUrl = `/uploads/${req.file.filename}`;
+    originalname = req.file.originalname;
+  }
+
   const newMessage = {
     doctorName,
     patientName,
     sender,
-    text,
+    text: text || null,
+    fileUrl,
+    originalname,
     timestamp: new Date(),
   };
 
@@ -175,19 +198,9 @@ app.post("/api/messages/doctor/:patientName", async (req, res) => {
 
     io.to(roomId).emit("newMessage", newMessage);
 
-    io.to(doctorRoom).emit("notifyMessage", {
-      sender,
-      text,
-      patientName,
-      doctorName,
-    });
+    io.to(doctorRoom).emit("notifyMessage", newMessage);
 
-    io.to(patientRoom).emit("notifyMessage", {
-      sender,
-      text,
-      patientName,
-      doctorName,
-    });
+    io.to(patientRoom).emit("notifyMessage", newMessage);
 
     res.json(newMessage);
   } catch (err) {
@@ -227,7 +240,7 @@ app.get("/api/messages/patient/:doctorName", async (req, res) => {
   }
 });
 
-app.post("/api/messages/patient/:doctorName", async (req, res) => {
+app.post("/api/messages/patient/:doctorName", upload.single("file"), async (req, res) => {
   if (!req.session.patientName) {
     return res.status(401).json({ erro: "Não autenticado como paciente." });
   }
@@ -237,11 +250,20 @@ app.post("/api/messages/patient/:doctorName", async (req, res) => {
   const patientName = req.session.patientName;
   const sender = patientName;
 
+  let fileUrl = null;
+  let originalname = null;
+  if (req.file) {
+    fileUrl = `/uploads/${req.file.filename}`;
+    originalname = req.file.originalname;
+  }
+
   const newMessage = {
     doctorName,
     patientName,
     sender,
-    text,
+    text: text || null,
+    fileUrl,
+    originalname,
     timestamp: new Date(),
   };
 
@@ -257,19 +279,9 @@ app.post("/api/messages/patient/:doctorName", async (req, res) => {
 
     io.to(roomId).emit("newMessage", newMessage);
 
-    io.to(doctorRoom).emit("notifyMessage", {
-      sender,
-      text,
-      patientName,
-      doctorName,
-    });
+    io.to(doctorRoom).emit("notifyMessage", newMessage);
 
-    io.to(patientRoom).emit("notifyMessage", {
-      sender,
-      text,
-      patientName,
-      doctorName,
-    });
+    io.to(patientRoom).emit("notifyMessage", newMessage);
 
     res.json(newMessage);
   } catch (err) {
