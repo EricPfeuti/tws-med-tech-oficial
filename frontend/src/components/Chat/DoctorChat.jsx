@@ -50,7 +50,7 @@ export default function DoctorChat() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() && !file) return;
 
     try {
       const formData = new FormData();
@@ -83,14 +83,13 @@ export default function DoctorChat() {
             >
               <div className="bubble">
                 <strong>{msg.sender}: </strong>
-                {msg.text && <span>{msg.text}</span>}
                 {msg.fileUrl && (
-                  <a href={`http://localhost:3001${msg.fileUrl}`} 
-                  target="_blank" 
-                  rel="noreferrer">
-                    📎 {msg.fileUrl.split("/").pop()}
+                  <a href={`http://localhost:3001/download/${msg.fileUrl.split("/").pop()}`}
+                  >
+                    {msg.originalname || "arquivo"}
                   </a>
-                )}
+                )}<br></br>
+                {msg.text && <span>{msg.text}</span>}
               </div>
             </div>
           )
@@ -104,8 +103,12 @@ export default function DoctorChat() {
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
+          {file && (
+            <span className="file-name">📄 {file.name}</span>
+          )}
           <input
             type="file"
+            style={{ display: "none" }}
             onChange={(e) => setFile(e.target.files[0])}
             id="fileInput"
           />

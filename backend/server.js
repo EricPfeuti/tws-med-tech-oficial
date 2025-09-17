@@ -281,6 +281,17 @@ app.post("/api/messages/patient/:doctorName", upload.single("file"), async (req,
   }
 });
 
+// DOWNLOAD FORÇADO
+app.get("/download/:filename", (req, res) => {
+  const filePath = path.join(__dirname, "uploads", req.params.filename);
+  res.download(filePath, (err) => {
+    if (err) {
+      console.error("Erro no download:", err);
+      res.status(500).send("Erro ao baixar o arquivo");
+    }
+  });
+});
+
 // CRIAR REUNIÃO
 app.post("/api/meetings/create", async (req, res) => {
   if (!req.session.doctorName) {

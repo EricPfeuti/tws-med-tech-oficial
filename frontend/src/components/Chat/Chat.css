@@ -67,6 +67,11 @@ section.chat-container {
     background: #eef3f7;
 }
 
+.messages a{
+    font-weight: 500;
+    text-decoration: underline;
+}
+
 .messages span {
     color: #000;
 }
@@ -99,6 +104,11 @@ section.chat-container {
     border-radius: 15px 15px 15px 0;
     max-width: 60%;
     word-wrap: break-word;
+}
+
+.file-name{
+    color: #000;
+    font-weight: 550;
 }
 
 .chat-container .inputs {
