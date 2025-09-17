@@ -41,21 +41,22 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+const url = "mongodb://127.0.0.1:27017/";
+const TWSMedTech = "TWSMedTech";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    cb(null, uuidv4() + path.extname(file.originalname));
-  },
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
 });
 
 const upload = multer({ storage });
 
-const url = "mongodb://127.0.0.1:27017/";
-const TWSMedTech = "TWSMedTech";
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(express.static(path.join(__dirname, "frontend/build")));
 
@@ -168,21 +169,15 @@ app.post("/api/messages/doctor/:patientName", upload.single("file"), async (req,
   const { text } = req.body;
   const doctorName = req.session.doctorName;
   const sender = doctorName;
-
-  let fileUrl = null;
-  let originalname = null;
-  if (req.file) {
-    fileUrl = `/uploads/${req.file.filename}`;
-    originalname = req.file.originalname;
-  }
+  const file = req.file;
 
   const newMessage = {
     doctorName,
     patientName,
     sender,
     text: text || null,
-    fileUrl,
-    originalname,
+    fileUrl: file ? `/uploads/${file.filename}` : null,
+    originalname: file ? file.originalname : null,
     timestamp: new Date(),
   };
 
@@ -249,21 +244,15 @@ app.post("/api/messages/patient/:doctorName", upload.single("file"), async (req,
   const { text } = req.body;
   const patientName = req.session.patientName;
   const sender = patientName;
-
-  let fileUrl = null;
-  let originalname = null;
-  if (req.file) {
-    fileUrl = `/uploads/${req.file.filename}`;
-    originalname = req.file.originalname;
-  }
+  const file = req.file;
 
   const newMessage = {
     doctorName,
     patientName,
     sender,
     text: text || null,
-    fileUrl,
-    originalname,
+    fileUrl: file ? `/uploads/${file.filename}` : null,
+    originalname: file ? file.originalname : null,
     timestamp: new Date(),
   };
 

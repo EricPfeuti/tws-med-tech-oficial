@@ -11,7 +11,7 @@ export default function DoctorChat() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [doctorName, setDoctorName] = useState("");
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     
@@ -58,12 +58,13 @@ export default function DoctorChat() {
       if (file) formData.append("file", file);
     
       await api.post(`/messages/doctor/${patientName}`, formData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+        credentials: "include",
+        body: formData,
       });
 
       setText("");
-      setFile("");
+      setFile(null);
+      document.getElementById("fileInput").value = ""; // limpa o input file
     } catch (err) {
       console.error("Erro ao enviar mensagem:", err);
     }
@@ -82,9 +83,11 @@ export default function DoctorChat() {
             >
               <div className="bubble">
                 <strong>{msg.sender}: </strong>
-                <span>{msg.text}</span>
+                {msg.text && <span>{msg.text}</span>}
                 {msg.fileUrl && (
-                  <a href={`http://localhost:3001${msg.fileUrl}`} target="_blank" rel="noreferrer">
+                  <a href={`http://localhost:3001${msg.fileUrl}`} 
+                  target="_blank" 
+                  rel="noreferrer">
                     📎 {msg.fileUrl.split("/").pop()}
                   </a>
                 )}
@@ -97,23 +100,18 @@ export default function DoctorChat() {
         <div className="inputs">
           <input
             type="text"
-            placeholder="Digite sua mensagem"
+            placeholder="Digite sua mensagem:"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
           <input
             type="file"
             onChange={(e) => setFile(e.target.files[0])}
-            style={{ display: "none" }}
             id="fileInput"
-            accept=".pdf,.jpg,.png,.docx"
           />
           <label htmlFor="fileInput" id="clip">
             <i className="bi bi-paperclip"></i>
           </label>
-          {file && (
-            <span className="file-name">📄 {file.name}</span>
-          )}
           <button type="submit" id="send"><i class="bi bi-send-fill"></i></button>
         </div>
       </form>

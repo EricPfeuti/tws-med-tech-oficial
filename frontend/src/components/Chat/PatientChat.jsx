@@ -10,7 +10,7 @@ export default function PatientChat() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [patientName, setPatientName] = useState("");
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     
@@ -57,12 +57,13 @@ export default function PatientChat() {
       if(file) formData.append("file", file);
 
       await api.post(`/messages/patient/${doctorName}`, formData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+        credentials: "include",
+        body: formData,
       }); 
 
       setText("");
-      setFile("");
+      setFile(null);
+      document.getElementById("fileInput").value = "";
     } catch (err) {
       console.error("Erro ao enviar mensagem:", err);
     }
@@ -103,16 +104,11 @@ export default function PatientChat() {
           <input
             type="file"
             onChange={(e) => setFile(e.target.files[0])}
-            style={{ display: "none" }}
             id="fileInput"
-            accept=".pdf,.jpg,.png,.docx"
           />
           <label htmlFor="fileInput" id="clip">
             <i className="bi bi-paperclip"></i>
           </label>
-          {file && (
-            <span className="file-name">📄 {file.name}</span>
-          )}
           <button type="submit" id="send"><i class="bi bi-send-fill"></i></button>
         </div>
       </form>
