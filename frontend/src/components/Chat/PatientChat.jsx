@@ -57,8 +57,8 @@ export default function PatientChat() {
       if(file) formData.append("file", file);
 
       await api.post(`/messages/patient/${doctorName}`, formData, {
-        credentials: "include",
-        body: formData,
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
       }); 
 
       setText("");

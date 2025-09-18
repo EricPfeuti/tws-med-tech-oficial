@@ -58,8 +58,8 @@ export default function DoctorChat() {
       if (file) formData.append("file", file);
     
       await api.post(`/messages/doctor/${patientName}`, formData, {
-        credentials: "include",
-        body: formData,
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       setText("");

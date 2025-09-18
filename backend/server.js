@@ -10,7 +10,6 @@ const http = require("http");
 const { Server } = require("socket.io");
 const multer = require("multer");
 const crypto = require("crypto");
-const CryptoJS = require("crypto-js");
 
 const app = express();
 const port = 3001;
@@ -177,14 +176,14 @@ app.get("/api/messages/doctor/:patientName", async (req, res) => {
       .sort({ timestamp: 1 })
       .toArray();
     
-    mensagens = mensagens.map(msg => ({
+    mensagensDecifradas = mensagens.map(msg => ({
       ...msg,
       text: msg.text ? decrypt(msg.text) : null,
       fileUrl: msg.fileUrl ? decrypt(msg.fileUrl) : null,
       originalname: msg.originalname ? decrypt(msg.originalname) : null,
     }))
 
-    res.json(mensagens);
+    res.json(mensagensDecifradas);
   } catch (err) {
     console.error("Erro ao buscar mensagens:", err);
     res.status(500).json({ erro: "Erro ao buscar mensagens." });
@@ -220,17 +219,27 @@ app.post("/api/messages/doctor/:patientName", upload.single("file"), async (req,
     const banco = client.db(TWSMedTech);
     await banco.collection("mensagens").insertOne(newMessage);
 
+    const outgoing = {
+      doctorName: newMessage.doctorName,
+      patientName: newMessage.patientName,
+      sender: newMessage.sender,
+      text: newMessage.text ? decrypt(newMessage.text) : null,
+      fileUrl: newMessage.fileUrl ? decrypt(newMessage.fileUrl) : null,
+      originalname: newMessage.originalname ? decrypt(newMessage.originalname) : null,
+      timestamp: newMessage.timestamp,
+    };
+
     const roomId = `${doctorName}-${patientName}`;
     const doctorRoom = `doctor-${doctorName}`;
     const patientRoom = `patient-${patientName}`;
 
-    io.to(roomId).emit("newMessage", newMessage);
+    io.to(roomId).emit("newMessage", outgoing);
 
-    io.to(doctorRoom).emit("notifyMessage", newMessage);
+    io.to(doctorRoom).emit("notifyMessage", outgoing);
 
-    io.to(patientRoom).emit("notifyMessage", newMessage);
+    io.to(patientRoom).emit("notifyMessage", outgoing);
 
-    res.json(newMessage);
+    res.json(outgoing);
   } catch (err) {
     console.error("Erro ao salvar mensagem:", err);
     res.status(500).json({ erro: "Erro ao salvar mensagem." });
@@ -259,14 +268,14 @@ app.get("/api/messages/patient/:doctorName", async (req, res) => {
       .sort({ timestamp: 1 })
       .toArray();
     
-    mensagens = mensagens.map(msg => ({
+    mensagensDecifradas = mensagens.map(msg => ({
       ...msg,
       text: msg.text ? decrypt(msg.text) : null,
       fileUrl: msg.fileUrl ? decrypt(msg.fileUrl) : null,
       originalname: msg.originalname ? decrypt(msg.originalname) : null,
     }))
 
-    res.json(mensagens);
+    res.json(mensagensDecifradas);
   } catch (err) {
     console.error("Erro ao buscar mensagens:", err);
     res.status(500).json({ erro: "Erro ao buscar mensagens." });
@@ -302,17 +311,27 @@ app.post("/api/messages/patient/:doctorName", upload.single("file"), async (req,
     const banco = client.db(TWSMedTech);
     await banco.collection("mensagens").insertOne(newMessage);
 
+    const outgoing = {
+      doctorName: newMessage.doctorName,
+      patientName: newMessage.patientName,
+      sender: newMessage.sender,
+      text: newMessage.text ? decrypt(newMessage.text) : null,
+      fileUrl: newMessage.fileUrl ? decrypt(newMessage.fileUrl) : null,
+      originalname: newMessage.originalname ? decrypt(newMessage.originalname) : null,
+      timestamp: newMessage.timestamp,
+    };
+
     const roomId = `${doctorName}-${patientName}`;
     const doctorRoom = `doctor-${doctorName}`;
     const patientRoom = `patient-${patientName}`;
 
-    io.to(roomId).emit("newMessage", newMessage);
+    io.to(roomId).emit("newMessage", outgoing);
 
-    io.to(doctorRoom).emit("notifyMessage", newMessage);
+    io.to(doctorRoom).emit("notifyMessage", outgoing);
 
-    io.to(patientRoom).emit("notifyMessage", newMessage);
+    io.to(patientRoom).emit("notifyMessage", outgoing);
 
-    res.json(newMessage);
+    res.json(outgoing);
   } catch (err) {
     console.error("Erro ao salvar mensagem:", err);
     res.status(500).json({ erro: "Erro ao salvar mensagem." });
