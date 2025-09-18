@@ -16,7 +16,7 @@ export default function PatientChat() {
     
     const fetchMessages = async () => {
       try {
-        const res = await api.get(`/messages/patient/${doctorName}`);
+        const res = await api.get(`/messages/patient/${doctorName}`, { withCredentials: true });
         setMessages(res.data);
       } catch (err) {
         console.error("Erro ao buscar mensagens:", err);
@@ -39,7 +39,7 @@ export default function PatientChat() {
     sessionGet();
 
     socket.on("newMessage", (msg) => {
-      setMessages(prev => [...prev, msg]);
+      setMessages((prev) => [...prev, msg]);
     });
 
     return () => {
@@ -85,7 +85,7 @@ export default function PatientChat() {
                 {msg.fileUrl && (
                   <a href={`http://localhost:3001/download/${msg.fileUrl.split("/").pop()}`}
                   >
-                    {msg.originalname || "arquivo"}
+                    {msg.originalname}
                   </a>
                 )}<br></br>
                 {msg.text && <span>{msg.text}</span>}

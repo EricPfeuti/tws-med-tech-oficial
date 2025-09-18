@@ -17,7 +17,7 @@ export default function DoctorChat() {
     
     const fetchMessages = async () => {
       try {
-        const res = await api.get(`/messages/doctor/${patientName}`);
+        const res = await api.get(`/messages/doctor/${patientName}`, { withCredentials: true });
         setMessages(res.data);
       } catch (err) {
         console.error("Erro ao buscar mensagens:", err);
@@ -40,7 +40,7 @@ export default function DoctorChat() {
     sessionGet();
 
     socket.on("newMessage", (msg) => {
-      setMessages(prev => [...prev, msg]);
+      setMessages((prev) => [...prev, msg]);
     });
 
     return () => {
@@ -64,7 +64,7 @@ export default function DoctorChat() {
 
       setText("");
       setFile(null);
-      document.getElementById("fileInput").value = ""; // limpa o input file
+      document.getElementById("fileInput").value = "";
     } catch (err) {
       console.error("Erro ao enviar mensagem:", err);
     }
@@ -86,7 +86,7 @@ export default function DoctorChat() {
                 {msg.fileUrl && (
                   <a href={`http://localhost:3001/download/${msg.fileUrl.split("/").pop()}`}
                   >
-                    {msg.originalname || "arquivo"}
+                    {msg.originalname}
                   </a>
                 )}<br></br>
                 {msg.text && <span>{msg.text}</span>}

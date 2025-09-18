@@ -9,6 +9,8 @@ const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const { Server } = require("socket.io");
 const multer = require("multer");
+const crypto = require("crypto");
+const CryptoJS = require("crypto-js");
 
 const app = express();
 const port = 3001;
@@ -44,6 +46,9 @@ app.use(cors(corsOptions));
 const url = "mongodb://127.0.0.1:27017/";
 const TWSMedTech = "TWSMedTech";
 
+const SECRET_KEY = crypto.createHash("sha256").update("minha-chave-super-secreta").digest();
+const IV = Buffer.alloc(16, 0);
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -55,6 +60,27 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+function encrypt(text) {
+  if(!text) return null;
+  const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, IV);
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return encrypted;
+}
+
+function decrypt(text) {
+  if (!text) return null;
+  try {
+    const decipher = crypto.createDecipheriv("aes-256-cbc", SECRET_KEY, IV);
+    let decrypted = decipher.update(text, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
+  } catch (err) {
+    console.error("Erro ao descriptografar:", err);
+    return text;
+  }
+}
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -145,11 +171,18 @@ app.get("/api/messages/doctor/:patientName", async (req, res) => {
     await client.connect();
     const banco = client.db(TWSMedTech);
 
-    const mensagens = await banco
+    let mensagens = await banco
       .collection("mensagens")
       .find({ doctorName, patientName })
       .sort({ timestamp: 1 })
       .toArray();
+    
+    mensagens = mensagens.map(msg => ({
+      ...msg,
+      text: msg.text ? decrypt(msg.text) : null,
+      fileUrl: msg.fileUrl ? decrypt(msg.fileUrl) : null,
+      originalname: msg.originalname ? decrypt(msg.originalname) : null,
+    }))
 
     res.json(mensagens);
   } catch (err) {
@@ -175,9 +208,9 @@ app.post("/api/messages/doctor/:patientName", upload.single("file"), async (req,
     doctorName,
     patientName,
     sender,
-    text: text || null,
-    fileUrl: file ? `/uploads/${file.filename}` : null,
-    originalname: file ? file.originalname : null,
+    text: encrypt(text || ""),
+    fileUrl: file ? encrypt(`/uploads/${file.filename}`) : null,
+    originalname: file ? encrypt(file.originalname) : null,
     timestamp: new Date(),
   };
 
@@ -220,11 +253,18 @@ app.get("/api/messages/patient/:doctorName", async (req, res) => {
     await client.connect();
     const banco = client.db(TWSMedTech);
 
-    const mensagens = await banco
+    let mensagens = await banco
       .collection("mensagens")
       .find({ doctorName, patientName })
       .sort({ timestamp: 1 })
       .toArray();
+    
+    mensagens = mensagens.map(msg => ({
+      ...msg,
+      text: msg.text ? decrypt(msg.text) : null,
+      fileUrl: msg.fileUrl ? decrypt(msg.fileUrl) : null,
+      originalname: msg.originalname ? decrypt(msg.originalname) : null,
+    }))
 
     res.json(mensagens);
   } catch (err) {
@@ -245,14 +285,14 @@ app.post("/api/messages/patient/:doctorName", upload.single("file"), async (req,
   const patientName = req.session.patientName;
   const sender = patientName;
   const file = req.file;
-
+  
   const newMessage = {
     doctorName,
     patientName,
     sender,
-    text: text || null,
-    fileUrl: file ? `/uploads/${file.filename}` : null,
-    originalname: file ? file.originalname : null,
+    text: encrypt(text || ""),
+    fileUrl: file ? encrypt(`/uploads/${file.filename}`) : null,
+    originalname: file ? encrypt(file.originalname) : null,
     timestamp: new Date(),
   };
 
