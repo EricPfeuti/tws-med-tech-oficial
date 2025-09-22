@@ -57,7 +57,7 @@ export default function FuncionalidadesDoctor() {
           <h2>Calendário</h2>
           <p>Verifique o calendário de consultas com outros pacientes.</p>
           <div id="btn-vermelho">
-            <a href="#">
+            <a href="/doctor/calendar">
               <button>COMEÇAR</button>
             </a>
           </div>

@@ -25,6 +25,8 @@ import PatientDoctors from "./pages/Screens/Patient/Chat/PatientDoctors";
 import ChatPatient from "./pages/Screens/Patient/Chat/ChatPatient";
 import ChatDoctor from "./pages/Screens/Doctor/Chat/ChatDoctor";
 import "react-toastify/dist/ReactToastify.css";
+import CalendarioPatient from "./pages/Screens/Patient/Events/CalendarioPatient";
+import CalendarioDoctor from "./pages/Screens/Doctor/Events/CalendarioDoctor";
 
 function App() {
   return (
@@ -110,6 +112,23 @@ function App() {
                 </PrivatePatientRoute>
               }
             ></Route>
+            <Route
+              path="/patient/calendar"
+              element={
+                <PrivatePatientRoute>
+                  <CalendarioPatient />
+                </PrivatePatientRoute>
+              }
+            />
+
+            <Route
+              path="/doctor/calendar"
+              element={
+                <PrivateDoctorRoute>
+                  <CalendarioDoctor />
+                </PrivateDoctorRoute>
+              }
+            />
             <Route path="*" element={<Erro />} />
           </Routes>
           <ToastContainer

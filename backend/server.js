@@ -1,5 +1,6 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
 const methodOverride = require("method-override");
@@ -10,6 +11,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const multer = require("multer");
 const crypto = require("crypto");
+const { json } = require("stream/consumers");
 
 const app = express();
 const port = 3001;
@@ -123,6 +125,192 @@ function requirePatient(req, res, next) {
   }
   next();
 }
+
+// CALEND[ARIO PACIENTE]
+app.get("/api/calendar/patient", async (req, res) => {
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Não autenticado como paciente." });
+  }
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    const eventos = await banco.collection("calendarioPatients")
+      .find({ patientName: req.session.patientName })
+      .toArray();
+
+    const decrypted = eventos.map(ev => ({
+      ...ev,
+      title: decrypt(ev.title),
+      description: decrypt(ev.description),
+      date: decrypt(ev.date),
+      time: decrypt(ev.time),
+      attendees: ev.attendees ? ev.attendees.map(a => decrypt(a)) : []
+    }));
+
+    res.json(decrypted);
+  } catch (err) {
+    console.error("Erro ao listar eventos:", err);
+    res.status(500).json({ erro: "Erro ao listar eventos." });
+  } finally {
+    await client.close();
+  }
+})
+
+// CRIAR COMPROMISSO PACIENTE
+app.post("/api/calendar/patient", async (req, res) => {
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Não autenticado como paciente." });
+  }
+
+  const { title, description, date, time, attendees } = req.body;
+
+  const event = {
+    patientName: req.session.patientName,
+    date: encrypt(date),
+    time: encrypt(time),
+    title: encrypt(title),
+    description: description ? encrypt(description) : null,
+    attendees: attendees ? attendees.map(a => encrypt(a)) : [],
+    createdAt: new Date(),
+  }
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    await banco.collection("calendarioPatients").insertOne(event);
+    res.json(event);
+  } catch(err) {
+    console.error("Erro ao criar o evento:", err);
+    res.status(500).json({ erro: "Erro ao criar o evento." })
+  } finally {
+    await client.close();
+  }
+});
+
+// DELETAR COMPROMISSO PACIENTE
+app.delete("/api/calendar/patient/:id", async (req, res) => {
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Não autenticado como paciente." });
+  }
+
+  const { id } = req.params;
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    await banco.collection("calendarioPatients").deleteOne({
+      _id: new ObjectId(id),
+      patientName: req.session.patientName,
+    });
+    res.json({ sucesso: true });
+  } catch(err) {
+    console.error("Erro ao excluir evento:", err);
+    res.status(500).json({ erro: "Erro ao excluir evento." });
+  } finally {
+    await client.close();
+  }
+});
+
+// CALENDÁRIO MÉDICO
+app.get("/api/calendar/doctor", async (req, res) => {
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Não autenticado como médico." });
+  }
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db("TWSMedTech");
+    const events = await banco.collection("calendarDoctors")
+      .find({ doctorName: req.session.doctorName })
+      .toArray();
+
+    const decrypted = events.map(ev => ({
+      ...ev,
+      title: decrypt(ev.title),
+      description: decrypt(ev.description),
+      date: decrypt(ev.date),
+      time: decrypt(ev.time),
+      attendees: ev.attendees ? ev.attendees.map(a => decrypt(a)) : []
+    }));
+
+    res.json(decrypted);
+  } catch (err) {
+    console.error("Erro ao buscar eventos:", err);
+    res.status(500).json({ erro: "Erro ao buscar eventos." });
+  } finally {
+    await client.close();
+  }
+});
+
+// POSTAR EVENTO
+app.post("/api/calendar/doctor", async (req, res) => {
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Não autenticado como médico." });
+  }
+
+  const { title, description, date, time, attendees } = req.body;
+  const event = {
+    doctorName: req.session.doctorName,
+    title: encrypt(title),
+    description: description ? encrypt(description) : null,
+    date: encrypt(date),
+    time: encrypt(time),
+    attendees: attendees ? attendees.map(a => encrypt(a)) : [],
+    createdAt: new Date(),
+  };
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db("TWSMedTech");
+    await banco.collection("calendarDoctors").insertOne(event);
+
+    const outgoing = {
+      doctorName: event.doctorName,
+      title: event.title ? decrypt(event.title) : null,
+      description: event.description ? decrypt(event.description) : null,
+      date: event.date ? decrypt(event.date) : null,
+      time: event.time ? decrypt(event.time) : null,
+      attendees: attendees ? attendees.map(a => encrypt(a)) : [],
+      createdAt: new Date(),
+    };
+
+    res.json(outgoing);
+  } catch (err) {
+    console.error("Erro ao salvar evento:", err);
+    res.status(500).json({ erro: "Erro ao salvar evento." });
+  } finally {
+    await client.close();
+  }
+});
+
+// DELETAR COMPROMISSO MÉDICO
+app.delete("/api/calendar/doctor/:id", async (req, res) => {
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Não autenticado como médico." });
+  }
+
+  const { id } = req.params;
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db("TWSMedTech");
+    await banco.collection("calendarDoctors").deleteOne({
+      _id: new ObjectId(id),
+      doctorName: req.session.doctorName,
+    });
+    res.json({ sucesso: true });
+  } catch (err) {
+    console.error("Erro ao excluir evento médico:", err);
+    res.status(500).json({ erro: "Erro ao excluir evento." });
+  } finally {
+    await client.close();
+  }
+});
 
 // LISTAR PACIENTES
 app.get("/api/patients", requireDoctor, async (req, res) => {
