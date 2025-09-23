@@ -11,7 +11,6 @@ const http = require("http");
 const { Server } = require("socket.io");
 const multer = require("multer");
 const crypto = require("crypto");
-const { json } = require("stream/consumers");
 
 const app = express();
 const port = 3001;
@@ -146,7 +145,6 @@ app.get("/api/calendar/patient", async (req, res) => {
       description: decrypt(ev.description),
       date: decrypt(ev.date),
       time: decrypt(ev.time),
-      attendees: ev.attendees ? ev.attendees.map(a => decrypt(a)) : []
     }));
 
     res.json(decrypted);
@@ -172,7 +170,6 @@ app.post("/api/calendar/patient", async (req, res) => {
     time: encrypt(time),
     title: encrypt(title),
     description: description ? encrypt(description) : null,
-    attendees: attendees ? attendees.map(a => encrypt(a)) : [],
     createdAt: new Date(),
   }
 
@@ -234,7 +231,6 @@ app.get("/api/calendar/doctor", async (req, res) => {
       description: decrypt(ev.description),
       date: decrypt(ev.date),
       time: decrypt(ev.time),
-      attendees: ev.attendees ? ev.attendees.map(a => decrypt(a)) : []
     }));
 
     res.json(decrypted);
@@ -259,7 +255,6 @@ app.post("/api/calendar/doctor", async (req, res) => {
     description: description ? encrypt(description) : null,
     date: encrypt(date),
     time: encrypt(time),
-    attendees: attendees ? attendees.map(a => encrypt(a)) : [],
     createdAt: new Date(),
   };
 
@@ -275,7 +270,6 @@ app.post("/api/calendar/doctor", async (req, res) => {
       description: event.description ? decrypt(event.description) : null,
       date: event.date ? decrypt(event.date) : null,
       time: event.time ? decrypt(event.time) : null,
-      attendees: attendees ? attendees.map(a => encrypt(a)) : [],
       createdAt: new Date(),
     };
 
