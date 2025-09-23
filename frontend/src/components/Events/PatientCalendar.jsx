@@ -19,9 +19,9 @@ export default function PatientCalendar() {
         e.preventDefault();
 
         try {
-            await api.post("/calendar/doctor");
+            await api.post("/calendar/patient");
             setFormData({ title: "", description: "", date: "", time: "" });
-            navigate("/doctor/calendar/list");
+            navigate("/patient/calendar/list");
         } catch (err) {
             console.error("Erro ao salvar evento:", err);
         }

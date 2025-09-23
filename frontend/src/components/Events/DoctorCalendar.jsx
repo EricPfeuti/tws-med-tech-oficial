@@ -12,15 +12,17 @@ export default function DoctorCalendar() {
         time: "",
     });
 
-    const handleChange = (e) =>
+    const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            await api.post("/calendar/doctor");
-            setFormData({ title: "", description: "", date: "", time: "" });
+            await api.post("/calendar/doctor", {
+                headers: { "Content-Type": "application/json" }
+            });
             navigate("/doctor/calendar/list");
         } catch (err) {
             console.error("Erro ao salvar evento:", err);
@@ -31,13 +33,13 @@ export default function DoctorCalendar() {
         <div className="calendar-container">
             <h2>📅 Criar Evento - Médico</h2>
             <form onSubmit={handleSubmit} className="calendar-form">
-                <input type="text" name="title" value={formData.title} placeholder="Título" onChange={handleChange} />
-                <textarea name="description" value={formData.description} placeholder="Descrição" onChange={handleChange}></textarea>
-                <input type="date" name="date" value={formData.date} onChange={handleChange} />
-                <input type="time" name="time" value={formData.time} onChange={handleChange} />
+                <input type="text" name="title" value={formData.title} placeholder="Título" onChange={handleChange} required/>
+                <textarea name="description" value={formData.description} placeholder="Descrição" onChange={handleChange} required></textarea>
+                <input type="date" name="date" value={formData.date} onChange={handleChange} required/>
+                <input type="time" name="time" value={formData.time} onChange={handleChange} required/>
                 <button type="submit">Salvar</button>
-                <button><a href="/doctor/calendar/list">Ver Eventos</a></button>
             </form>
+            <button><a href="/doctor/calendar/list">Ver Eventos</a></button>
         </div>
     );
 }

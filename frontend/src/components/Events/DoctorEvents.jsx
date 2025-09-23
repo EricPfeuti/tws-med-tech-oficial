@@ -82,21 +82,9 @@ export default function DoctorEvents() {
                         setEditingEvent({ ...editingEvent, time: e.target.value })
                     }
                     />
-                    <input
-                    type="text"
-                    value={editingEvent.attendees?.join(", ") || ""}
-                    onChange={(e) =>
-                        setEditingEvent({
-                        ...editingEvent,
-                        attendees: e.target.value
-                            .split(",")
-                            .map((a) => a.trim()),
-                        })
-                    }
-                    />
                     <div className="card-buttons">
-                    <button onClick={handleSaveEdit}>Salvar</button>
-                    <button onClick={() => setEditingEvent(null)}>Cancelar</button>
+                      <button onClick={handleSaveEdit}>Salvar</button>
+                      <button onClick={() => setEditingEvent(null)}>Cancelar</button>
                     </div>
                 </>
                 ) : (
@@ -114,8 +102,8 @@ export default function DoctorEvents() {
                     </p>
                     )}
                     <div className="card-buttons">
-                    <button onClick={() => setEditingEvent(event)}>✏️ Editar</button>
-                    <button onClick={() => handleDelete(event._id)}>🗑️ Excluir</button>
+                      <button onClick={() => setEditingEvent(event)}>✏️ Editar</button>
+                      <button onClick={() => handleDelete(event._id)}>🗑️ Excluir</button>
                     </div>
                 </>
                 )}

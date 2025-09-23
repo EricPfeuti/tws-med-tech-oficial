@@ -1,54 +1,117 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/api";
+import Footer from "../../components/Web/Footer/Footer";
+import HeaderPatient from "../Web/Header/HeaderPatient";
 
-export default function PatientEvents(){
-    const [events, setEvents] = useState([]);
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [show, setShow] = useState(false);
-    
-    useEffect(() => {
+export default function DoctorEvents() {
+  const [events, setEvents] = useState([]);
+  const [editingEvent, setEditingEvent] = useState(null)
 
-        api.get("/calendar/patient")
-            .then((res) => setEvents(res.data))
-            .catch((err) => console.error("Erro ao carregar eventos:", err))
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-    }, []);
-
-    const handleClose = () => {
-        setShow(false);
-        setSelectedEvent(true);
+  const fetchEvents = async () => {
+    try {
+      const res = await api.get("/calendar/patient");
+      setEvents(res.data);
+    } catch (err) {
+      console.error("Erro ao buscar eventos:", err);
     }
+  };
 
-    const handleShow = (event) => {
-        setSelectedEvent(event);
-        setShow(true);
-    } 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir este evento?")) return;
 
-    return (
-        <div>
-            <h2>📌 Eventos do Médico</h2>
-            <div className="list-group">
-                {events.map((ev) => (
-                    <button key={ev._id} onClick={() => handleShow(ev)}>{ev.title} - {ev.date} {ev.time}</button>
-                ))}
+    try {
+      await api.delete(`/calendar/doctor/${id}`);
+      fetchEvents();
+    } catch (err) {
+      console.error("Erro ao excluir evento:", err);
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await api.put(`/calendar/patient/${editingEvent._id}`, editingEvent);
+      setEditingEvent(null);
+      fetchEvents();
+    } catch (err) {
+      console.error("Erro ao editar evento:", err);
+    }
+  };
+
+  return (
+    <div>
+        <HeaderPatient />
+        <div className="calendar-container">
+        <h2>📌 Lista de Eventos - Paciente</h2>
+
+        <div className="card-grid">
+            {events.map((event) => (
+            <div key={event._id} className="event-card">
+                {editingEvent && editingEvent._id === event._id ? (
+                <>
+                    <input
+                    type="text"
+                    value={editingEvent.title}
+                    onChange={(e) =>
+                        setEditingEvent({ ...editingEvent, title: e.target.value })
+                    }
+                    />
+                    <textarea
+                    value={editingEvent.description}
+                    onChange={(e) =>
+                        setEditingEvent({
+                        ...editingEvent,
+                        description: e.target.value,
+                        })
+                    }
+                    />
+                    <input
+                    type="date"
+                    value={editingEvent.date}
+                    onChange={(e) =>
+                        setEditingEvent({ ...editingEvent, date: e.target.value })
+                    }
+                    />
+                    <input
+                    type="time"
+                    value={editingEvent.time}
+                    onChange={(e) =>
+                        setEditingEvent({ ...editingEvent, time: e.target.value })
+                    }
+                    />
+                    <div className="card-buttons">
+                      <button onClick={handleSaveEdit}>Salvar</button>
+                      <button onClick={() => setEditingEvent(null)}>Cancelar</button>
+                    </div>
+                </>
+                ) : (
+                <>
+                    <h3>{event.title}</h3>
+                    <p>
+                    <strong>📅 Data:</strong> {event.date}
+                    </p>
+                    <p>
+                    <strong>⏰ Hora:</strong> {event.time}
+                    </p>
+                    {event.description && (
+                    <p>
+                        <strong>📝 Descrição:</strong> {event.description}
+                    </p>
+                    )}
+                    <div className="card-buttons">
+                      <button onClick={() => setEditingEvent(event)}>✏️ Editar</button>
+                      <button onClick={() => handleDelete(event._id)}>🗑️ Excluir</button>
+                    </div>
+                </>
+                )}
             </div>
-
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{selectedEvent?.title}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p><strong>Descrição:</strong> {selectedEvent?.description}</p>
-                    <p><strong>Data:</strong> {selectedEvent?.date}</p>
-                    <p><strong>Hora:</strong> {selectedEvent?.time}</p>
-                    <p><strong>Participantes:</strong> {selectedEvent?.attendes?.join(", ")}</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Fechar
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            ))}
         </div>
-    )
+        </div>
+        <Footer />
+    </div>
+  );
 }

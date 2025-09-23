@@ -125,7 +125,7 @@ function requirePatient(req, res, next) {
   next();
 }
 
-// CALEND[ARIO PACIENTE]
+// CALENDARIO PACIENTE
 app.get("/api/calendar/patient", async (req, res) => {
   if (!req.session.patientName) {
     return res.status(401).json({ erro: "Não autenticado como paciente." });
@@ -162,7 +162,7 @@ app.post("/api/calendar/patient", async (req, res) => {
     return res.status(401).json({ erro: "Não autenticado como paciente." });
   }
 
-  const { title, description, date, time, attendees } = req.body;
+  const { title, description, date, time } = req.body;
 
   const event = {
     patientName: req.session.patientName,
@@ -220,7 +220,7 @@ app.get("/api/calendar/doctor", async (req, res) => {
   const client = new MongoClient(url);
   try {
     await client.connect();
-    const banco = client.db("TWSMedTech");
+    const banco = client.db(TWSMedTech);
     const events = await banco.collection("calendarDoctors")
       .find({ doctorName: req.session.doctorName })
       .toArray();
@@ -248,7 +248,7 @@ app.post("/api/calendar/doctor", async (req, res) => {
     return res.status(401).json({ erro: "Não autenticado como médico." });
   }
 
-  const { title, description, date, time, attendees } = req.body;
+  const { title, description, date, time } = req.body;
   const event = {
     doctorName: req.session.doctorName,
     title: encrypt(title),
