@@ -18,9 +18,17 @@ export default function PatientCalendar() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const payload = {
+            title: formData.title,
+            description: formData.description,
+            date: formData.date,
+            time: formData.time,
+        }
+
         try {
-            await api.post("/calendar/patient");
-            setFormData({ title: "", description: "", date: "", time: "" });
+            await api.post("/calendar/patient", payload, {
+                headers: { "Content-Type": "application/json" }
+            });
             navigate("/patient/calendar/list");
         } catch (err) {
             console.error("Erro ao salvar evento:", err);
@@ -29,7 +37,7 @@ export default function PatientCalendar() {
 
     return (
         <div className="calendar-container">
-            <h2>📅 Criar Evento - Paciente</h2>
+            <h2>Criar Evento - Paciente</h2>
             <form onSubmit={handleSubmit} className="calendar-form">
                 <input type="text" name="title" value={formData.title} placeholder="Título" onChange={handleChange} />
                 <textarea name="description" value={formData.description} placeholder="Descrição" onChange={handleChange}></textarea>
@@ -38,6 +46,9 @@ export default function PatientCalendar() {
                 <button type="submit">Salvar</button>
                 <button><a href="/patient/calendar/list">Ver Eventos</a></button>
             </form>
+            <div id="events-btn">
+                <button><a href="/doctor/calendar/list">Ver Eventos</a></button>
+            </div>
         </div>
     );
 }

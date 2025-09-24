@@ -19,8 +19,15 @@ export default function DoctorCalendar() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const payload = {
+            title: formData.title,
+            description: formData.description,
+            date: formData.date,
+            time: formData.time,
+        }
+
         try {
-            await api.post("/calendar/doctor", {
+            await api.post("/calendar/doctor", payload, {
                 headers: { "Content-Type": "application/json" }
             });
             navigate("/doctor/calendar/list");
@@ -31,7 +38,7 @@ export default function DoctorCalendar() {
 
     return (
         <div className="calendar-container">
-            <h2>📅 Criar Evento - Médico</h2>
+            <h2>Criar Evento - Médico</h2>
             <form onSubmit={handleSubmit} className="calendar-form">
                 <input type="text" name="title" value={formData.title} placeholder="Título" onChange={handleChange} required/>
                 <textarea name="description" value={formData.description} placeholder="Descrição" onChange={handleChange} required></textarea>
@@ -39,7 +46,9 @@ export default function DoctorCalendar() {
                 <input type="time" name="time" value={formData.time} onChange={handleChange} required/>
                 <button type="submit">Salvar</button>
             </form>
-            <button><a href="/doctor/calendar/list">Ver Eventos</a></button>
+            <div id="events-btn">
+                <button><a href="/doctor/calendar/list">Ver Eventos</a></button>
+            </div>
         </div>
     );
 }

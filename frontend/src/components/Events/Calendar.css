@@ -1,16 +1,7 @@
 .calendar-container {
-  max-width: 700px;
   min-height: 100vh;
-  margin: 30px auto;
   padding: 180px;
   border-radius: 12px;
-  background: #f9f9f9;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.calendar-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
 }
 
 .calendar-form {
@@ -18,6 +9,28 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 25px;
+}
+
+#events-btn button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  padding: 10px;
+  background: #007bff;
+  border: 0;
+  transition: .3s;
+}
+
+#events-btn button a {
+  color: #fff;
+}
+
+#events-btn button:hover {
+  background: #0056b3;
 }
 
 .calendar-form input,
