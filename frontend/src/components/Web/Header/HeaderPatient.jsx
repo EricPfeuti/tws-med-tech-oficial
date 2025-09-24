@@ -22,7 +22,7 @@ export default function HeaderPatient() {
         <div id="btn-perfil">
           <a href="/editPatient">
             <button>
-              <i class="bi bi-person-fill"></i>
+              <i className="bi bi-person-fill"></i>
             </button>
           </a>
         </div>

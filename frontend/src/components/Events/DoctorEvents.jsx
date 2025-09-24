@@ -67,6 +67,10 @@ export default function DoctorEvents() {
     }
   };
 
+  const handleRefresh = () => {
+    window.location.reload();
+  }
+
   return (
     <div>
       <HeaderDoctor />
@@ -103,6 +107,12 @@ export default function DoctorEvents() {
                     onChange={handleChange}
                   />
                   <div className="card-buttons">
+                    <button
+                      id="btn-update"
+                      className="btn-update"
+                      onClick={() => handleRefresh()}
+                    >🔨 Atualizar
+                    </button>
                     <button
                       className="btn-save"
                       onClick={() => handleUpdate(event._id)}

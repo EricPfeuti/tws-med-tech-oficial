@@ -189,20 +189,21 @@ app.post("/api/calendar/patient", async (req, res) => {
 
 // EDITAR COMPROMISSO PACIENTE
 app.put("/api/calendar/patient/:id", async (req, res) => {
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Não autenticado como paciente." });
+  }
+
   const { id } = req.params;
   const { title, description, date, time } = req.body;
 
-  if (!req.session.patientName) {
-    return res.status(401).json({ erro: "Não autenticado como médico." });
-  }
-
   const client = new MongoClient(url);
   try {
+
     await client.connect();
     const db = client.db(TWSMedTech);
 
     const result = await db.collection("calendarioPatients").findOneAndUpdate(
-      { _id: new ObjectId(id), doctorName: req.session.doctorName },
+      { _id: new ObjectId(id), patientName: req.session.patientName },
       {
         $set: {
           title,

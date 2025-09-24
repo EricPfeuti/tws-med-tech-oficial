@@ -34,13 +34,13 @@ export default function ServicosPatient() {
         </div>
         <div className="card">
           <div className="bg">
-            <h2>Chat disponível</h2>
-            <p>Chat disponível entre médico e paciente.</p>
+            <h2>Organizar Consulta</h2>
+            <p>Organizar suas consultas como uma agenda.</p>
             <br />
             <div className="circles">
-              <div className="circle">Bate-papo</div>
-              <div className="circle">Cliente</div>
-              <div className="circle">Atendimento</div>
+              <div className="circle">Agenda</div>
+              <div className="circle">Consultas</div>
+              <div className="circle">Organização</div>
             </div>
           </div>
           <br />
