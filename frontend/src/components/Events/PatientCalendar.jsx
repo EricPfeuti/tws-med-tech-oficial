@@ -37,17 +37,16 @@ export default function PatientCalendar() {
 
     return (
         <div className="calendar-container">
-            <h2>Criar Evento - Paciente</h2>
+            <h1 id="titulo">Criar Evento - Paciente</h1><br />
             <form onSubmit={handleSubmit} className="calendar-form">
                 <input type="text" name="title" value={formData.title} placeholder="Título" onChange={handleChange} />
                 <textarea name="description" value={formData.description} placeholder="Descrição" onChange={handleChange}></textarea>
                 <input type="date" name="date" value={formData.date} onChange={handleChange} />
                 <input type="time" name="time" value={formData.time} onChange={handleChange} />
                 <button type="submit">Salvar</button>
-                <button><a href="/patient/calendar/list">Ver Eventos</a></button>
             </form>
             <div id="events-btn">
-                <button><a href="/doctor/calendar/list">Ver Eventos</a></button>
+                <button><a href="/patient/calendar/list">Ver Eventos</a></button>
             </div>
         </div>
     );

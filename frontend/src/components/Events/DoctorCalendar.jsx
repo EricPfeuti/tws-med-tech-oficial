@@ -38,7 +38,7 @@ export default function DoctorCalendar() {
 
     return (
         <div className="calendar-container">
-            <h2>Criar Evento - Médico</h2>
+            <h1 id="titulo">Criar Evento - Médico</h1><br />
             <form onSubmit={handleSubmit} className="calendar-form">
                 <input type="text" name="title" value={formData.title} placeholder="Título" onChange={handleChange} required/>
                 <textarea name="description" value={formData.description} placeholder="Descrição" onChange={handleChange} required></textarea>

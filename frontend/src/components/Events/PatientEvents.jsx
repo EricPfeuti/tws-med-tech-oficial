@@ -5,8 +5,7 @@ import HeaderPatient from "../Web/Header/HeaderPatient";
 
 export default function DoctorEvents() {
   const [events, setEvents] = useState([]);
-  const [editingEvent, setEditingEvent] = useState(null)
-
+  
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -24,93 +23,40 @@ export default function DoctorEvents() {
     if (!window.confirm("Tem certeza que deseja excluir este evento?")) return;
 
     try {
-      await api.delete(`/calendar/doctor/${id}`);
+      await api.delete(`/calendar/patient/${id}`);
       fetchEvents();
     } catch (err) {
       console.error("Erro ao excluir evento:", err);
     }
   };
 
-  const handleSaveEdit = async () => {
-    try {
-      await api.put(`/calendar/patient/${editingEvent._id}`, editingEvent);
-      setEditingEvent(null);
-      fetchEvents();
-    } catch (err) {
-      console.error("Erro ao editar evento:", err);
-    }
-  };
-
   return (
     <div>
         <HeaderPatient />
-        <div className="calendar-container">
-        <h2>📌 Lista de Eventos - Paciente</h2>
-
-        <div className="card-grid">
-            {events.map((event) => (
-            <div key={event._id} className="event-card">
-                {editingEvent && editingEvent._id === event._id ? (
-                <>
-                    <input
-                    type="text"
-                    value={editingEvent.title}
-                    onChange={(e) =>
-                        setEditingEvent({ ...editingEvent, title: e.target.value })
-                    }
-                    />
-                    <textarea
-                    value={editingEvent.description}
-                    onChange={(e) =>
-                        setEditingEvent({
-                        ...editingEvent,
-                        description: e.target.value,
-                        })
-                    }
-                    />
-                    <input
-                    type="date"
-                    value={editingEvent.date}
-                    onChange={(e) =>
-                        setEditingEvent({ ...editingEvent, date: e.target.value })
-                    }
-                    />
-                    <input
-                    type="time"
-                    value={editingEvent.time}
-                    onChange={(e) =>
-                        setEditingEvent({ ...editingEvent, time: e.target.value })
-                    }
-                    />
-                    <div className="card-buttons">
-                      <button onClick={handleSaveEdit}>Salvar</button>
-                      <button onClick={() => setEditingEvent(null)}>Cancelar</button>
-                    </div>
-                </>
-                ) : (
-                <>
+          <div div className="calendar-container">
+            <h1 id="titulo">Lista de Eventos</h1>
+            <div className="card-grid">
+                {events.map((event) => (
+                  <div key={event._id} className="event-card">
                     <h3>{event.title}</h3>
                     <p>
-                    <strong>📅 Data:</strong> {event.date}
+                      <strong>Data:</strong> {event.date}
                     </p>
                     <p>
-                    <strong>⏰ Hora:</strong> {event.time}
+                      <strong>Hora:</strong> {event.time}
                     </p>
                     {event.description && (
-                    <p>
-                        <strong>📝 Descrição:</strong> {event.description}
-                    </p>
+                      <p>
+                        <strong>Descrição:</strong> {event.description}
+                      </p>
                     )}
                     <div className="card-buttons">
-                      <button onClick={() => setEditingEvent(event)}>✏️ Editar</button>
-                      <button onClick={() => handleDelete(event._id)}>🗑️ Excluir</button>
-                    </div>
-                </>
-                )}
+                      <button className="btn-delete" onClick={() => handleDelete(event._id)}>🗑️ Excluir</button>
+                    </div><br />
+                  </div>
+                ))}
             </div>
-            ))}
-        </div>
-        </div>
+          </div>
         <Footer />
     </div>
   );

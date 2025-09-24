@@ -187,6 +187,46 @@ app.post("/api/calendar/patient", async (req, res) => {
   }
 });
 
+// EDITAR COMPROMISSO PACIENTE
+app.put("/api/calendar/patient/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, description, date, time } = req.body;
+
+  if (!req.session.patientName) {
+    return res.status(401).json({ erro: "Não autenticado como médico." });
+  }
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const db = client.db(TWSMedTech);
+
+    const result = await db.collection("calendarioPatients").findOneAndUpdate(
+      { _id: new ObjectId(id), doctorName: req.session.doctorName },
+      {
+        $set: {
+          title,
+          description,
+          date,
+          time,
+        },
+      },
+      { returnDocument: "after" }
+    );
+
+    if (!result.value) {
+      return res.status(404).json({ erro: "Evento não encontrado." });
+    }
+
+    res.json(result.value);
+  } catch (err) {
+    console.error("Erro ao atualizar evento:", err);
+    res.status(500).json({ erro: "Erro ao atualizar evento." });
+  } finally {
+    await client.close();
+  }
+});
+
 // DELETAR COMPROMISSO PACIENTE
 app.delete("/api/calendar/patient/:id", async (req, res) => {
   if (!req.session.patientName) {
@@ -261,7 +301,7 @@ app.post("/api/calendar/doctor", async (req, res) => {
   const client = new MongoClient(url);
   try {
     await client.connect();
-    const banco = client.db("TWSMedTech");
+    const banco = client.db(TWSMedTech);
     await banco.collection("calendarDoctors").insertOne(event);
 
     const outgoing = {
@@ -277,6 +317,46 @@ app.post("/api/calendar/doctor", async (req, res) => {
   } catch (err) {
     console.error("Erro ao salvar evento:", err);
     res.status(500).json({ erro: "Erro ao salvar evento." });
+  } finally {
+    await client.close();
+  }
+});
+
+// EDITAR COMPROMISSO MÉDICO
+app.put("/api/calendar/doctor/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, description, date, time } = req.body;
+
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Não autenticado como médico." });
+  }
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const db = client.db(TWSMedTech);
+
+    const result = await db.collection("calendarDoctors").findOneAndUpdate(
+      { _id: new ObjectId(id), doctorName: req.session.doctorName },
+      {
+        $set: {
+          title,
+          description,
+          date,
+          time,
+        },
+      },
+      { returnDocument: "after" }
+    );
+
+    if (!result.value) {
+      return res.status(404).json({ erro: "Evento não encontrado." });
+    }
+
+    res.json(result.value);
+  } catch (err) {
+    console.error("Erro ao atualizar evento:", err);
+    res.status(500).json({ erro: "Erro ao atualizar evento." });
   } finally {
     await client.close();
   }
