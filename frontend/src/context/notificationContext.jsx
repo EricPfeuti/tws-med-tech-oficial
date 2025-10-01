@@ -31,10 +31,6 @@ export function NotificationProvider({ children }) {
 
     joinRooms();
 
-    socket.on("newMessage", (msg) => {
-      toast(`💬 Nova mensagem de ${msg.sender}`);
-    });
-
     socket.on("notifyMessage", ({ sender }) => {
       const isChatOpen = 
         location.pathname.startsWith("/doctor/chat") || location.pathname.startsWith("/patient/chat");
@@ -50,7 +46,6 @@ export function NotificationProvider({ children }) {
 
     return () => {
       socket.off("notifyMessage");
-      socket.off("newMessage");
     };
   }, [location]);
 

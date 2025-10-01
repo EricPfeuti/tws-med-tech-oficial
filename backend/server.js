@@ -492,11 +492,8 @@ app.post("/api/messages/doctor/:patientName", upload.single("file"), async (req,
       timestamp: newMessage.timestamp,
     };
 
-    const roomId = `${doctorName}-${patientName}`;
     const doctorRoom = `doctor-${doctorName}`;
     const patientRoom = `patient-${patientName}`;
-
-    io.to(roomId).emit("newMessage", outgoing);
 
     io.to(doctorRoom).emit("notifyMessage", outgoing);
 
@@ -584,11 +581,8 @@ app.post("/api/messages/patient/:doctorName", upload.single("file"), async (req,
       timestamp: newMessage.timestamp,
     };
 
-    const roomId = `${doctorName}-${patientName}`;
     const doctorRoom = `doctor-${doctorName}`;
     const patientRoom = `patient-${patientName}`;
-
-    io.to(roomId).emit("newMessage", outgoing);
 
     io.to(doctorRoom).emit("notifyMessage", outgoing);
 
