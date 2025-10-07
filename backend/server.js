@@ -496,8 +496,7 @@ app.post("/api/messages/doctor/:patientName", upload.single("file"), async (req,
     const patientRoom = `patient-${patientName}`;
 
     io.to(doctorRoom).emit("notifyMessage", outgoing);
-
-    io.to(patientRoom).emit("notifyMessage", outgoing);
+    io.to(patientRoom).emit("newMessage", outgoing);
 
     res.json(outgoing);
   } catch (err) {
@@ -584,8 +583,7 @@ app.post("/api/messages/patient/:doctorName", upload.single("file"), async (req,
     const doctorRoom = `doctor-${doctorName}`;
     const patientRoom = `patient-${patientName}`;
 
-    io.to(doctorRoom).emit("notifyMessage", outgoing);
-
+    io.to(doctorRoom).emit("newMessage", outgoing);
     io.to(patientRoom).emit("notifyMessage", outgoing);
 
     res.json(outgoing);
