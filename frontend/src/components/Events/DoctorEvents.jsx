@@ -52,8 +52,14 @@ export default function DoctorEvents() {
   };
 
   const handleUpdate = async (id) => {
+    const confirm = window.confirm("Tem certeza que deseja atualizar este evento?");
+    if (!confirm) return;
+    if (confirm) {
+      window.location.reload();
+    }
     try {
       await api.put(`/calendar/doctor/${id}`, formData);
+      await fetchEvents();
       setEditingEvent(null);
       setFormData({
         title: "",
@@ -61,15 +67,10 @@ export default function DoctorEvents() {
         date: "",
         time: "",
       });
-      fetchEvents();
     } catch (err) {
       console.error("Erro ao atualizar evento:", err);
     }
   };
-
-  const handleRefresh = () => {
-    window.location.reload();
-  }
 
   return (
     <div>
@@ -107,12 +108,6 @@ export default function DoctorEvents() {
                     onChange={handleChange}
                   />
                   <div className="card-buttons">
-                    <button
-                      id="btn-update"
-                      className="btn-update"
-                      onClick={() => handleRefresh()}
-                    >🔨 Atualizar
-                    </button>
                     <button
                       className="btn-save"
                       onClick={() => handleUpdate(event._id)}
