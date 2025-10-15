@@ -12,29 +12,7 @@ export default function ServicosPatient() {
       <div className="container-grid-cards-servicos">
         <div className="card">
           <div className="bg">
-            <h2>Teleconsultas</h2>
-            <p>
-              Consultas em tempo real com médicos cardiologistas.
-            </p><br />
-            <div className="circles">
-              <div className="circle">
-                Consulta Médica
-              </div>
-              <div className="circle">
-                Videoconferência
-              </div>
-              <div className="circle">
-                Tecnologia
-              </div>
-            </div>
-          </div><br />
-          <div id="btn-saiba-mais">
-            <a href="#"><button>ENTRAR</button></a>
-          </div>
-        </div>
-        <div className="card">
-          <div className="bg">
-            <h2>Organizar Consulta</h2>
+            <h2>Organizar Consultas</h2>
             <p>Organizar suas consultas como uma agenda.</p>
             <br />
             <div className="circles">
