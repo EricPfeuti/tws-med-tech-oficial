@@ -13,10 +13,11 @@ export default function PatientChat() {
   const [file, setFile] = useState(null);
 
   useEffect(() => {
-    
     const fetchMessages = async () => {
       try {
-        const res = await api.get(`/messages/patient/${doctorName}`, { withCredentials: true });
+        const res = await api.get(`/messages/patient/${doctorName}`, {
+          withCredentials: true,
+        });
         setMessages(res.data);
       } catch (err) {
         console.error("Erro ao buscar mensagens:", err);
@@ -27,10 +28,15 @@ export default function PatientChat() {
 
     const sessionGet = async () => {
       try {
-        const s = await api.get("/checkPatientSession", { withCredentials: true });
+        const s = await api.get("/checkPatientSession", {
+          withCredentials: true,
+        });
         if (s.data.logado) {
           setPatientName(s.data.patientName);
-          socket.emit("joinRoom", { doctorName, patientName: s.data.patientName });
+          socket.emit("joinRoom", {
+            doctorName,
+            patientName: s.data.patientName,
+          });
         }
       } catch (e) {
         console.error(e);
@@ -54,12 +60,12 @@ export default function PatientChat() {
     try {
       const formData = new FormData();
       if (text) formData.append("text", text);
-      if(file) formData.append("file", file);
+      if (file) formData.append("file", file);
 
       await api.post(`/messages/patient/${doctorName}`, formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
-      }); 
+      });
 
       setText("");
       setFile(null);
@@ -75,6 +81,9 @@ export default function PatientChat() {
       <div className="messages">
         {messages.map((msg, idx) => {
           const isOwnMessage = msg.sender === patientName;
+          const isImage =
+            msg.fileUrl && /\.(jpg|jpeg|png|gif|webp)$/i.test(msg.fileUrl);
+
           return (
             <div
               key={idx}
@@ -82,16 +91,36 @@ export default function PatientChat() {
             >
               <div className="bubble">
                 <strong>{msg.sender}: </strong>
-                {msg.fileUrl && (
-                  <a href={`http://localhost:3001/download/${msg.fileUrl.split("/").pop()}`}
+                {isImage ? (
+                  <div className="image-wrapper">
+                    <img
+                      src={
+                        msg.fileUrl.startsWith("http")
+                          ? msg.fileUrl
+                          : `http://localhost:3001/${msg.fileUrl.replace(
+                              /^\/+/,
+                              ""
+                            )}`
+                      }
+                      alt={msg.originalname || "imagem"}
+                      className="chat-image"
+                    />
+                  </div>
+                ) : msg.fileUrl ? (
+                  <a
+                    href={`http://localhost:3001/download/${msg.fileUrl
+                      .split("/")
+                      .pop()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {msg.originalname}
                   </a>
-                )}<br></br>
-                {msg.text && <span>{msg.text}</span>}
+                ) : null}
+                {msg.text && <p>{msg.text}</p>}
               </div>
             </div>
-          )
+          );
         })}
       </div>
       <form onSubmit={sendMessage} className="chat-form">
@@ -102,9 +131,7 @@ export default function PatientChat() {
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          {file && (
-            <span className="file-name">📄 {file.name}</span>
-          )}
+          {file && <span className="file-name">📄 {file.name}</span>}
           <input
             type="file"
             style={{ display: "none" }}
@@ -114,10 +141,11 @@ export default function PatientChat() {
           <label htmlFor="fileInput" id="clip">
             <i className="bi bi-paperclip"></i>
           </label>
-          <button type="submit" id="send"><i class="bi bi-send-fill"></i></button>
+          <button type="submit" id="send">
+            <i className="bi bi-send-fill"></i>
+          </button>
         </div>
       </form>
     </section>
-
   );
 }
