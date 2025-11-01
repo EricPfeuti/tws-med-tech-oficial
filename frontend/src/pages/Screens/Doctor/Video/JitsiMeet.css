@@ -1,0 +1,63 @@
+.meet-container {
+  display: flex;
+  min-height: 100vh;
+  padding: 180px 8%;
+  height: calc(100vh - 140px);
+}
+
+.video-section {
+  flex: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.side-panel {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.side-panel h2 {
+  color: #1e3a8a;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.side-panel p {
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.side-panel select {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  transition: 0.2s;
+}
+
+.side-panel button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: 550;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.side-panel button:hover {
+  background-color: #1e40af;
+}
+
+.status-message {
+  margin-top: 15px;
+  font-size: 0.95rem;
+  color: #1e3a8a;
+  font-weight: 500;
+}

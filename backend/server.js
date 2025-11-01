@@ -639,6 +639,57 @@ app.post("/api/meetings/create", async (req, res) => {
   }
 });
 
+app.post("/api/meetings/send-link", async (req, res) => {
+  if (!req.session.doctorName) {
+    return res.status(401).json({ erro: "Apenas médicos podem enviar links" });
+  }
+
+  const { patientName, roomName } = req.body;
+  if (!patientName || !roomName) {
+    return res.status(400).json({ erro: "Paciente e nome da sala são obrigatórios" });
+  }
+
+  const doctorName = req.session.doctorName;
+  const meetingLink = `https://meet.jit.si/${roomName}`;
+
+  const newMessage = {
+    doctorName,
+    patientName,
+    sender: doctorName,
+    text: encrypt(`Convite para reunião: ${meetingLink}`),
+    fileUrl: null,
+    originalname: null,
+    timestamp: new Date(),
+  };
+
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const banco = client.db(TWSMedTech);
+    await banco.collection("mensagens").insertOne(newMessage);
+
+    const outgoing = {
+      doctorName,
+      patientName,
+      sender: doctorName,
+      text: `Convite para reunião: ${meetingLink}`,
+      timestamp: new Date(),
+    };
+
+    const doctorRoom = `doctor-${doctorName}`;
+    const patientRoom = `patient-${patientName}`;
+    io.to(doctorRoom).emit("notifyMessage", outgoing);
+    io.to(patientRoom).emit("newMessage", outgoing);
+
+    res.json({ sucesso: true, message: "Link enviado com sucesso", link: meetingLink });
+  } catch (err) {
+    console.error("Erro ao enviar link:", err);
+    res.status(500).json({ erro: "Erro ao enviar link da reunião" });
+  } finally {
+    await client.close();
+  }
+});
+
 // CADASTRO MÉDICO
 app.post("/api/signDoctor", async (req, res) => {
   const client = new MongoClient(url);
