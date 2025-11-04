@@ -1,5 +1,9 @@
 import React from "react";
 import EricImg from "../../../assets/images/EricImage.png";
+import LeoImg from "../../../assets/images/LeoImage.png";
+import MatheusImg from "../../../assets/images/MatheusImage.png";
+import RafaelImg from "../../../assets/images/RafaelImage.png";
+import EmanuelImg from "../../../assets/images/EmanuelImage.png";
 import "./Membros.css";
 
 export default function Membros() {
@@ -32,8 +36,8 @@ export default function Membros() {
             </div>
           </div>
           <div className="membro">
-            <img src={EricImg} alt="Eric Img" />
-            <h2>Eric Pfeuti</h2>
+            <img src={LeoImg} alt="Leo Img" />
+            <h2>Leonardo Duarte</h2>
             <div className="btn-social">
               <a href="#">
                 <button>
@@ -53,8 +57,8 @@ export default function Membros() {
             </div>
           </div>
           <div className="membro">
-            <img src={EricImg} alt="Rafa Img" />
-            <h2>Eric Pfeuti</h2>
+            <img src={RafaelImg} alt="Rafa Img" />
+            <h2>Rafael Sá</h2>
             <div className="btn-social">
               <a href="#">
                 <button>
@@ -76,8 +80,8 @@ export default function Membros() {
         </div><br />
         <div className="row">
           <div className="membro">
-            <img src={EricImg} alt="Eric Img" />
-            <h2>Eric Pfeuti</h2>
+            <img src={MatheusImg} alt="Matheus Img" />
+            <h2>Matheus Santos</h2>
             <div className="btn-social">
               <a href="#">
                 <button>
@@ -97,8 +101,8 @@ export default function Membros() {
             </div>
           </div>
           <div className="membro">
-            <img src={EricImg} alt="Rafa Img"/>
-            <h2>Eric Pfeuti</h2>
+            <img src={EmanuelImg} alt="Emanuel Img"/>
+            <h2>Emanuel Domingues</h2>
             <div className="btn-social">
               <a href="#">
                 <button>
