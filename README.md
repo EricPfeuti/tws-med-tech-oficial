@@ -52,13 +52,3 @@ npm install
 npm start
 ```
 
-👉 CONFIRMAR: os comandos de execução (`npm start`, `npm run dev`...) e as portas usadas.
-
-### Variáveis de ambiente
-
-👉 CONFIRMAR: crie um arquivo `backend/.env.example` (sem valores reais) e liste aqui, por exemplo:
-
-| Variável | Descrição |
-|----------|-----------|
-| `PORT` | Porta da API |
-| `MONGO_URI` | String de conexão com o MongoDB |
